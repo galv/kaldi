@@ -3,6 +3,7 @@
 // Copyright      2015  Johns Hopkins University (author: Daniel Povey)
 //                2015  Guoguo Chen
 //                2015  Xiaohui Zhang
+//                2016  LinkedIn (author: Daniel Galvez)
 
 // See ../../COPYING for clarification regarding multiple authors
 //
@@ -528,6 +529,11 @@ class NonlinearComponent: public Component {
 
   // The mutex is used in UpdateStats, only for resizing vectors.
   Mutex mutex_;
+};
+
+class TunableComponent {
+ public:
+  virtual void SelectBestAlgorithm();
 };
 
 } // namespace nnet3

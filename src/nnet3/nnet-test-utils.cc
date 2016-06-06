@@ -1086,7 +1086,7 @@ static void GenerateRandomComponentConfig(std::string *component_type,
          << " filt-y-step=" << filt_y_step
          << " filt-z-step=" << filt_z_step
          << " num-filters=" << num_filters
-         << " input-vectorization-order=" << vectorization
+        //         << " input-vectorization-order=" << vectorization
          << " learning-rate=" << learning_rate;
       break;
       // TODO : add test for file based initialization. But confirm how to write

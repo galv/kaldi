@@ -181,11 +181,7 @@ void CuDNN3DConvolutionComponent::InitFromConfig(ConfigLine *cfl) {
     num_filters = -1,
     upscale_x_dim = -1, upscale_y_dim = -1, upscale_z_dim = -1,
     pad_x_dim = -1, pad_y_dim = -1, pad_z_dim = -1;
-
-  std::string input_vectorization_order = "zyx";
-  TensorVectorizationType input_vectorization = kZyx;
-  // TODO: Figure our whether we need to allow input_vectorization_order
-  // to be configurable.
+  std::string input_vectorization_order;
 
   InitLearningRatesFromConfig(cfl);
   ok = ok && cfl->GetValue("num-filters", &num_filters);
@@ -198,7 +194,7 @@ void CuDNN3DConvolutionComponent::InitFromConfig(ConfigLine *cfl) {
   ok = ok && cfl->GetValue("filt-z-dim", &filt_z_dim);
   // the config line uses "step" while the code uses "stride"
   // because we want to be more compatible with the original
-  // ConvolutionComponent interface. Tis code uses "stride"
+  // ConvolutionComponent interface. This code uses "stride"
   // to be consistent with the naming in the cudnn documentation.
   ok = ok && cfl->GetValue("filt-x-step", &filt_x_stride);
   ok = ok && cfl->GetValue("filt-y-step", &filt_y_stride);
@@ -220,9 +216,6 @@ void CuDNN3DConvolutionComponent::InitFromConfig(ConfigLine *cfl) {
   }
 
   // If zero padding is not explicitly specified, use no padding.
-  pad_x_dim = 0;
-  pad_y_dim = 0;
-  pad_z_dim = 0;
   if(!cfl->GetValue("pad-x-dim", &pad_x_dim)) {
     pad_x_dim = 0;
   }
@@ -232,6 +225,22 @@ void CuDNN3DConvolutionComponent::InitFromConfig(ConfigLine *cfl) {
   if(!cfl->GetValue("pad-z-dim", &pad_z_dim)) {
     pad_z_dim = 0;
   }
+
+  TensorVectorizationType input_vectorization;
+  if (!cfl->GetValue("input-vectorization-order", &input_vectorization_order)) {
+    input_vectorization_order = "zyx";
+  }
+  if (input_vectorization_order.compare("zyx") == 0) {
+    input_vectorization = kZyx;
+  } else if (input_vectorization_order.compare("yzx") == 0) {
+    input_vectorization = kYzx;
+  } else {
+    KALDI_ERR << "Unknown or unsupported input vectorization order "
+              << input_vectorization_order
+              << " accepted candidates are 'yzx' and 'zyx'";
+  }
+
+
   int32 filter_input_dim = filt_x_dim * filt_y_dim * filt_z_dim;
   BaseFloat param_stddev = 1.0 / std::sqrt(filter_input_dim), bias_stddev = 1.0;
   cfl->GetValue("param-stddev", &param_stddev);
@@ -314,13 +323,6 @@ int32 CuDNN3DConvolutionComponent::OutputDim() const {
 void CuDNN3DConvolutionComponent::Propagate(const ComponentPrecomputedIndexes *indexes,
                                             const CuMatrixBase<BaseFloat> &in,
                                             CuMatrixBase<BaseFloat> *out) const {
-
-  BaseFloat f = filter_params_.FrobeniusNorm();
-  KALDI_ASSERT(f == f);
-  BaseFloat b = bias_params_.Sum();
-  KALDI_ASSERT(b == b);
-
-  KALDI_ASSERT(input_vectorization_ == kZyx && "Only zyx vectorization supported right now.");
   KALDI_ASSERT(in.NumCols() == in.Stride());
   KALDI_ASSERT(out->NumCols() == out->Stride());
 
@@ -349,6 +351,54 @@ void CuDNN3DConvolutionComponent::Propagate(const ComponentPrecomputedIndexes *i
                                              input_strides
                                              )
                   );
+
+  const CuMatrix<BaseFloat> *in_zyx;
+  bool had_to_reshape;
+  if (input_vectorization_ == kZyx) {
+    *in_zyx = in;
+    had_to_reshape = false;
+  } else {
+    // else, conclude vectorization is yzx and
+    // convert in to kZyx vectorization with cudnnTransformTensor()
+    KALDI_ASSERT(input_vectorization_ == kYzx);
+    had_to_reshape = true;
+
+    cudnnTensorDescriptor_t in_yzx_desc;
+    CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&in_yzx_desc));
+    int32 input_dims[kConvolutionDimension_ + 2] = {in.NumRows(),
+                                                    input_num_filters_,
+                                                    input_y_dim_,
+                                                    input_z_dim_,
+                                                    input_x_dim_};
+    KALDI_ASSERT(input_num_filters_ * input_y_dim_ * input_z_dim_ * input_x_dim_ ==
+                 in.Stride());
+    int32 input_strides[kConvolutionDimension_ + 2] =
+      {input_num_filters_ * input_y_dim_ * input_z_dim_ * input_x_dim_, // == in.Stride()
+       input_y_dim_ * input_z_dim_ * input_x_dim_,
+       input_z_dim_ * input_x_dim_,
+       input_x_dim_,
+       1};
+    CUDNN_SAFE_CALL(cudnnSetTensorNdDescriptor(in_yzx_desc,
+                                               cudnn::GetDataType(),
+                                               kConvolutionDimension_ + 2,
+                                               input_dims,
+                                               input_strides
+                                               )
+                  );
+
+    in_zyx = new CuMatrix(in.NumRows(), in.NumCols(), kUndefined, kStrideEqualNumCols);
+    CUDNN_SAFE_CALL(cudnnTransformTensor(CuDevice::Instantiate().GetCudnnHandle(),
+                                         &cudnn::one, // alpha
+                                         in_yzx_desc,
+                                         in.Data(),
+                                         &cudnn::zero, // beta
+                                         in_desc,
+                                         in_zyx->Data()
+                                         )
+                    );
+
+    CUDNN_SAFE_CALL(cudnnDestroyTensorDescriptor(in_yzx_desc));
+  }
 
   std::vector<int32> output_dims_per_filter = GetOutputDims();
   int32 output_dims[kConvolutionDimension_ + 2] = {
@@ -381,7 +431,7 @@ void CuDNN3DConvolutionComponent::Propagate(const ComponentPrecomputedIndexes *i
   cudnn::ConvolutionForward(CuDevice::Instantiate().GetCudnnHandle(),
                             &cudnn::one,
                             in_desc,
-                            in.Data(),
+                            in_zyx.Data(),
                             filter_desc_,
                             filter_params_.Data(),
                             conv_desc_,
@@ -401,11 +451,15 @@ void CuDNN3DConvolutionComponent::Propagate(const ComponentPrecomputedIndexes *i
                    &cudnn::one,
                    out_desc,
                    out->Data()
-                  )
+                   )
                   );
 
   CUDNN_SAFE_CALL(cudnnDestroyTensorDescriptor(in_desc));
   CUDNN_SAFE_CALL(cudnnDestroyTensorDescriptor(out_desc));
+
+  if(had_to_reshape) {
+    delete in_zyx;
+  }
 }
 
 void CuDNN3DConvolutionComponent::Backprop(const std::string &debug_info,
@@ -417,11 +471,6 @@ void CuDNN3DConvolutionComponent::Backprop(const std::string &debug_info,
                                          CuMatrixBase<BaseFloat> *in_deriv) const {
   CuDNN3DConvolutionComponent *to_update =
     dynamic_cast<CuDNN3DConvolutionComponent*>(to_update_in);
-
-  BaseFloat f = filter_params_.FrobeniusNorm();
-  KALDI_ASSERT(f == f);
-  BaseFloat b = bias_params_.Sum();
-  KALDI_ASSERT(b == b);
 
   cudnnTensorDescriptor_t out_deriv_desc;
   CUDNN_SAFE_CALL(cudnnCreateTensorDescriptor(&out_deriv_desc));
@@ -521,10 +570,10 @@ void CuDNN3DConvolutionComponent::Update(const CuMatrixBase<BaseFloat> &in_value
                                    );
 
   cudnn::ConvolutionBackwardBias(CuDevice::Instantiate().GetCudnnHandle(),
-                                 &learning_rate_,
+                                 &learning_rate_, // alpha
                                  out_deriv_desc,
                                  out_deriv.Data(),
-                                 &cudnn::one,
+                                 &cudnn::one, // beta
                                  bias_desc_,
                                  bias_params_.Data()
                                  );
@@ -661,23 +710,23 @@ void CuDNN3DConvolutionComponent::Write(std::ostream &os, bool binary) const {
   KALDI_ASSERT(mode == CUDNN_CROSS_CORRELATION);
   KALDI_ASSERT(float_type == cudnn::GetDataType());
   WriteToken(os, binary, "<FilterXPadding>");
-  WriteBasicType(os, binary, padding[0]);
+  WriteBasicType(os, binary, padding[2]);
   WriteToken(os, binary, "<FilterYPadding>");
   WriteBasicType(os, binary, padding[1]);
   WriteToken(os, binary, "<FilterZPadding>");
-  WriteBasicType(os, binary, padding[2]);
+  WriteBasicType(os, binary, padding[0]);
   WriteToken(os, binary, "<FilterXStride>");
-  WriteBasicType(os, binary, strides[0]);
+  WriteBasicType(os, binary, strides[2]);
   WriteToken(os, binary, "<FilterYStride>");
   WriteBasicType(os, binary, strides[1]);
   WriteToken(os, binary, "<FilterZStride>");
-  WriteBasicType(os, binary, strides[2]);
+  WriteBasicType(os, binary, strides[0]);
   WriteToken(os, binary, "<FilterXUpscale>");
-  WriteBasicType(os, binary, upscales[0]);
+  WriteBasicType(os, binary, upscales[2]);
   WriteToken(os, binary, "<FilterYUpscale>");
   WriteBasicType(os, binary, upscales[1]);
   WriteToken(os, binary, "<FilterZUpscale>");
-  WriteBasicType(os, binary, upscales[2]);
+  WriteBasicType(os, binary, upscales[0]);
   WriteToken(os, binary, "<InputVectorization>");
   WriteBasicType(os, binary, static_cast<int32>(input_vectorization_));
   WriteToken(os, binary, "<FilterParams>");
@@ -796,6 +845,20 @@ void CuDNN3DConvolutionComponent::PerturbParams(BaseFloat stddev) {
   CuVector<BaseFloat> temp_bias_params(bias_params_);
   temp_bias_params.SetRandn();
   bias_params_.AddVec(stddev, temp_bias_params);
+}
+
+// Need sizes
+void CuDNN3DConvolutionComponent::SelectBestAlgorithm(int32 minibatch_size) {
+  // either CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_GEMM or
+  // CUDNN_CONVOLUTION_FWD_ALGO_IMPLICIT_PRECOMPUTED_GEMM
+  const int32 num_algos = 2;
+  cudnnFindConvolutionForwardAlgorithm(cudnn::GetDataType(),
+                                       //in_desc,
+                                       filter_desc_,
+                                       conv_desc_,
+                                       //out_desc,
+                                       
+                                       );
 }
 
 } // namespace nnet3

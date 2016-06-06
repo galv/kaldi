@@ -29,7 +29,7 @@
 namespace kaldi {
 namespace nnet3 {
 
-class CuDNN3DConvolutionComponent: public UpdatableComponent {
+class CuDNN3DConvolutionComponent: public UpdatableComponent, public TunableComponent {
  public:
   enum TensorVectorizationType  {
     kYzx = 0,
@@ -94,6 +94,8 @@ class CuDNN3DConvolutionComponent: public UpdatableComponent {
   virtual void Vectorize(VectorBase<BaseFloat> *params) const;
   virtual void UnVectorize(const VectorBase<BaseFloat> &params);
   virtual void PerturbParams(BaseFloat stddev);
+
+  virtual void SelectBestAlgorithm();
  private:
   std::vector<int32> GetOutputDims() const;
   std::vector<int32> GetFilterDims() const;
