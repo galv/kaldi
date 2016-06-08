@@ -482,7 +482,7 @@ void CuDNN3DConvolutionComponent::Propagate(const ComponentPrecomputedIndexes *i
                             forward_algo_,
                             work_space_,
                             work_space_size_,
-                            &cudnn::zero,
+                            &cudnn::one,
                             out_desc,
                             out->Data()
                             );
@@ -531,7 +531,7 @@ void CuDNN3DConvolutionComponent::Backprop(const std::string &debug_info,
   KALDI_ASSERT(out_deriv.Stride() == out_deriv.NumCols());
   KALDI_ASSERT(out_deriv.Stride() == num_filters_ * output_dims[0] * output_dims[1] * output_dims[2]);
   int32 out_deriv_strides[kConvolutionDimension_ + 2];
-  array_strides(kConvolutionDimension_ + 2, output_dims, out_deriv_strides);
+  array_strides(kConvolutionDimension_ + 2, out_deriv_dims, out_deriv_strides);
   CUDNN_SAFE_CALL(cudnnSetTensorNdDescriptor(out_deriv_desc,
                                              cudnn::GetDataType(),
                                              kConvolutionDimension_ + 2,
@@ -545,9 +545,9 @@ void CuDNN3DConvolutionComponent::Backprop(const std::string &debug_info,
     int32 in_dims[kConvolutionDimension_ + 2] = {
       in_value.NumRows(),
       input_num_filters_,
-      input_x_dim_,
+      input_z_dim_,
       input_y_dim_,
-      input_z_dim_
+      input_x_dim_
     };
     int32 in_strides[kConvolutionDimension_ + 2];
     array_strides(kConvolutionDimension_ + 2, in_dims, in_strides);

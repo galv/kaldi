@@ -184,10 +184,10 @@ void TestNnetComponentUpdatable(Component *c) {
 }
 
 void DiffSimpleComponentPairPropagateProperties(const Component &c1, const Component &c2) {
-  int32 properties = c1.Properties();
-  MatrixStrideType input_stride_type = (c1.Properties()&kInputContiguous) ?
+  int32 c1Properties = c1.Properties();
+  MatrixStrideType input_stride_type = (c1Properties&kInputContiguous) ?
       kStrideEqualNumCols : kDefaultStride;
-  MatrixStrideType output_stride_type = (c1.Properties()&kOutputContiguous) ?
+  MatrixStrideType output_stride_type = (c1Properties&kOutputContiguous) ?
       kStrideEqualNumCols : kDefaultStride;
 
   int32 input_dim = c1.InputDim(),
@@ -578,7 +578,7 @@ int main() {
     else
       CuDevice::Instantiate().SelectGpuId("yes");
 #endif
-//    UnitTestNnetComponent();
+    UnitTestNnetComponent();
   }
 
 #if HAVE_CUDNN == 1
