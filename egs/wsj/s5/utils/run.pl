@@ -31,6 +31,13 @@ $jobstart = 1;
 $jobend = 1;
 $ignored_opts = ""; # These will be ignored.
 
+# read max_job environment variable 
+$max_jobs_run =  $ENV{'max_jobs_run'};
+if ($max_jobs_run eq "") {
+ $max_jobs_run=-1;
+}
+# print STDERR "max_jobs_run=$max_jobs_run\n";
+
 # First parse an option like JOB=1:4, and any
 # options that would normally be given to
 # queue.pl, which we will just discard.
@@ -105,6 +112,12 @@ if ($max_jobs_run == -1) { # If --max-jobs-run option not set,
       print STDERR "run.pl: Warning: failed to detect any processors from /proc/cpuinfo\n";
       $max_jobs_run = 10;  # reasonable default.
     }
+    
+    if ($max_jobs_run > 24) {
+      $max_jobs_run = 24;  # reasonable default.
+    }
+    
+    print "maxJobs=$max_jobs_run\n";
     close(P);
   } elsif (open(P, "sysctl -a |")) {  # BSD/Darwin
     while (<P>) {
