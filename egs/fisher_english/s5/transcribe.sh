@@ -25,7 +25,7 @@ rm -rf data/workfit/*
 rm -rf mfcc/*workfit*
 
 # split file & create wav.scp, utt2spk
-sh split.sh $1 > data/workfit/split
+sh transcribeSplit.sh $1 > data/workfit/split
 cut -f1,2 -d" " data/workfit/split  | sort > data/workfit/utt2spk
 cut -f2-100 -d" " data/workfit/split | sort > data/workfit/wav.scp
 
