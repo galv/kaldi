@@ -11,6 +11,7 @@
 # then re-mapping to 39 phonemes for scoring:
 # http://repository.cmu.edu/cgi/viewcontent.cgi?article=2768&context=compsci
 #
+export max_jobs_run=30
 
 . ./cmd.sh 
 [ -f path.sh ] && . ./path.sh
@@ -36,7 +37,7 @@ echo "                Data & Lexicon & Language Preparation                     
 echo ============================================================================
 
 #timit=/export/corpora5/LDC/LDC93S1/timit/TIMIT # @JHU
-timit=/mnt/matylda2/data/TIMIT/timit # @BUT
+timit=/home/ahmad/git/kaldi/data/LDC93S1/TIMIT # @BUT
 
 local/timit_data_prep.sh $timit || exit 1
 
