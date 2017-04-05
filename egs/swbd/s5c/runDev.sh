@@ -21,16 +21,16 @@ export max_jobs_run=30
 has_fisher=false
 do_eval=true
 do_train=true
-do_prep=true
-do_mono=true
-do_tri1=true
-do_tri2=true
-do_tri3=true
-do_tri4=true
+do_prep=false
+do_mono=false
+do_tri1=false
+do_tri2=false
+do_tri3=false
+do_tri4=false
 do_tri4_1=false
 do_sgmm=false
 do_dnn=false
-do_nnet2=false
+do_nnet2=true
 do_lstm=true
 speaker_cmvn=true
 
@@ -412,12 +412,12 @@ fi
 
 if $do_dnn; then
 	# Karel's DNN recipe on top of fMLLR features
-	local/nnet/run_dnn.sh --do_train $do_train --do_eval $do_eval --has-fisher $has_fisher 
+	local/nnet/run_dnn.sh --has-fisher $has_fisher 
 fi
 
 if $do_nnet2; then
 	# Dan's nnet recipe
-	local/nnet2/run_nnet2.sh --do_train $do_train --do_eval $do_eval --has-fisher $has_fisher 
+	local/nnet2/run_nnet2.sh --has-fisher $has_fisher 
 fi
 
 # Dan's nnet recipe with online decoding.

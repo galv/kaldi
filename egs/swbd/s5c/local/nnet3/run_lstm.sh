@@ -44,7 +44,7 @@ final_effective_lrate=0.00003
 num_jobs_initial=3
 num_jobs_final=15
 momentum=0.5
-num_chunk_per_minibatch=100
+num_chunk_per_minibatch=64
 samples_per_iter=20000
 remove_egs=true
 
