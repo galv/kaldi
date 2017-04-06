@@ -27,7 +27,7 @@ do_tri1=true
 do_tri2=true
 do_tri3=true
 do_tri4=true
-do_tri4_1=false
+do_tri4_1=true
 do_sgmm=false
 do_dnn=false
 do_nnet2=false
@@ -78,7 +78,7 @@ if $do_prep; then
 	# fisher_dirs="/home/dpovey/data/LDC2004T19/fe_03_p1_tran/"
 	# fisher_dirs="/data/corpora0/LDC2004T19/fe_03_p1_tran/"
 	# fisher_dirs="/exports/work/inf_hcrc_cstr_general/corpora/fisher/transcripts" # Edinburgh,
-	# fisher_dirs="/mnt/matylda2/data/FISHER/fe_03_p1_tran /mnt/matylda2/data/FISHER/fe_03_p2_tran" # BUT,
+	# fgedit runDev.sh &isher_dirs="/mnt/matylda2/data/FISHER/fe_03_p1_tran /mnt/matylda2/data/FISHER/fe_03_p2_tran" # BUT,
 	
 	local/swbd1_train_lms.sh data/local/train/text data/local/dict_nosp/lexicon.txt data/local/lm $fisher_dirs
 	
