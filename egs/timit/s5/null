@@ -1,0 +1,3 @@
+/home/ahmad/kaldi/egs/timit/s5/../../../src/latbin/lattice-align-phones exp/dnn4_LLOG (lattice-to-ctm-conf[5.1.41~1-b3fc]:main():lattice-to-ctm-conf.cc:148) For utterance utt0028, Bayes Risk 4.67163, avg. confidence per-word 0.699474
+LOG (lattice-to-ctm-conf[5.1.41~1-b3fc]:main():lattice-to-ctm-conf.cc:157) Done 1 lattices.
+LOG (lattice-to-ctm-conf[5.1.41~1-b3fc]:main():lattice-to-ctm-conf.cc:158) Overall average Bayes Risk per sentence is 4.67163 and per word, 0.389303
