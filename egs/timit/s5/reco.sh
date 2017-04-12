@@ -49,7 +49,7 @@ echo "----------------"
 
 steps/decode_fmllr.sh --nj $jobs --skip-scoring true --cmd "$decode_cmd" \
  $graphDir data/workfit $gmmDir/decode_workfit
- 
+
 steps/nnet/make_fmllr_feats.sh --nj $jobs --cmd "$train_cmd" \
      --transform-dir $gmmDir/decode_workfit \
      data_fmllr/workfit data/workfit $gmmDir \
