@@ -264,6 +264,7 @@ bool DecodeUtteranceLatticeFaster(
   fst::Connect(&lat);
   if (determinize) {
     CompactLattice clat;
+    fprintf(stderr, "Compacting Lattice...\n");
     if (!DeterminizeLatticePhonePrunedWrapper(
             trans_model,
             &lat,

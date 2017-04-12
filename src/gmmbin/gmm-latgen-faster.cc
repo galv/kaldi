@@ -29,7 +29,7 @@
 #include "decoder/decoder-wrappers.h"
 #include "gmm/decodable-am-diag-gmm.h"
 #include "base/timer.h"
-#include "feat/feature-functions.h"  // feature reversal
+#include "feat/feature-functions.h"
 
 int main(int argc, char *argv[]) {
   try {
@@ -82,6 +82,8 @@ int main(int argc, char *argv[]) {
     }
 
     bool determinize = config.determinize_lattice;
+    fprintf(stdout, "Determinize=%d\n", determinize);
+
     CompactLatticeWriter compact_lattice_writer;
     LatticeWriter lattice_writer;
     if (! (determinize ? compact_lattice_writer.Open(lattice_wspecifier)
