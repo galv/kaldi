@@ -7,9 +7,9 @@ mfccdir=`pwd`/mfcc
 modelDir=exp/dnn4_pretrain-dbn_dnn
 gmmDir=exp/tri3
 graphDir=$gmmDir/graph
-min_lmwt=0.5
+min_lmwt=1
 max_lmwt=20
-step_lmwt=0.5
+step_lmwt=1
 lmwt_cnt=`echo "("$max_lmwt"-"$min_lmwt")/"$step_lmwt | bc -l`
 
 # create dir and cleanup if needed

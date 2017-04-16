@@ -22,14 +22,13 @@ for w in `seq 1 $windowCnt`; do
   start=`echo "("$w"-1)*"$delta | bc -l`;
   end=`echo $start"+"$window | bc -l` ;
   if [ $end -gt $intDuration ]; then
-    end=$intDuration
+    end=$duration
     start=`echo $end"-"$window | bc -l | cut -f1 -d"."`
   fi
 
   if [ $start -lt 0 ]; then
     start=0
-    window=$intDuration
-    end=$intDuration
+    end=$duration
   fi
   
   #echo "start="$start", end="$end
