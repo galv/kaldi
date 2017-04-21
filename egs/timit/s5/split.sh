@@ -34,6 +34,6 @@ for w in `seq 1 $windowCnt`; do
   #echo "start="$start", end="$end
  
   fileName=$noExt.$wind"."$start"."$end"."$outExt
-  sox $1 -c1 -r 16000 -t wavpcm -e signed-integer $fileName trim $start =$end  
+  sox $1 -c1 -r 8000 -t wavpcm -e signed-integer $fileName trim $start =$end  
   echo "utt"$wind" utt"$wind" cat "$fileName" | ";
 done

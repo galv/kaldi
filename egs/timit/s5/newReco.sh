@@ -4,9 +4,8 @@ export decode_cmd="run.pl --mem 4G"
 export train_cmd="run.pl --mem 4G"
 export max_jobs_run=30
 mfccdir=`pwd`/mfcc
-modelDir=exp/dnn4_pretrain-dbn_dnn
-gmmDir=exp/tri3
-graphDir=$gmmDir/graph
+modelDir=exp/tri2
+graphDir=exp/tri2/graph
 min_lmwt=1
 max_lmwt=20
 step_lmwt=1
@@ -22,7 +21,6 @@ if [ -d data/workfit ]; then
 fi;
 rm -rf data/workfit/*
 rm -rf mfcc/*workfit*
-rm -rf $modelDir/decode_workfit
 
 # split file & create wav.scp, utt2spk
 sh split.sh $1 > data/workfit/split
@@ -47,18 +45,8 @@ echo "----------------"
 echo "nnet2 Decoding..."
 echo "----------------"
 
-steps/decode_fmllr.sh --nj $jobs --skip-scoring true --cmd "$decode_cmd" \
- $graphDir data/workfit $gmmDir/decode_workfit
-
-steps/nnet/make_fmllr_feats.sh --nj $jobs --cmd "$train_cmd" \
-     --transform-dir $gmmDir/decode_workfit \
-     data_fmllr/workfit data/workfit $gmmDir \
-     data_fmllr/workfit/log data_fmllr/workfit/data 
-
-steps/nnet/decode.sh --nj $jobs --cmd "$decode_cmd" --acwt 0.2 \
-    --skip_scoring true \
-    $graphDir data_fmllr/workfit $modelDir/decode_workfit \
-
+steps//decode.sh --nj $jobs --cmd "$decode_cmd" \
+  --skip_scoring true $graphDir data/workfit $modelDir/decode_workfit
  
 #convert to FSTs
 echo "----------------------------------------------"
