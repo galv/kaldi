@@ -2,6 +2,7 @@
 export kaldiHome=`pwd`"/../../.."
 export decode_cmd="run.pl --mem 4G"
 export train_cmd="run.pl --mem 4G"
+export max_jobs_run=20
 mfccdir=`pwd`/mfcc
 modelDir=nnet2_online/nnet_a_gpu_online
 graphDir=tri5a/graph
