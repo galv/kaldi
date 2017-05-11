@@ -1,0 +1,7 @@
+/home/ahmad/kaldi/src/latbin/lattice-to-ctm-conf --decode-mbr=true --inv-acoustic-scale=9 ark:- - 
+LLOG (lattice-to-ctm-conf[5.1.3~1377-e28f3]:main():lattice-to-ctm-conf.cc:148) For utterance utt0001, Bayes Risk 1.15245, avg. confidence per-word 0.815813
+LOG (lattice-to-ctm-conf[5.1.3~1377-e28f3]:main():lattice-to-ctm-conf.cc:157) Done 1 lattices.
+LOG (lattice-to-ctm-conf[5.1.3~1377-e28f3]:main():lattice-to-ctm-conf.cc:158) Overall average Bayes Risk per sentence is 1.15245 and per word, 0.38415
+
+211
+9e-05
