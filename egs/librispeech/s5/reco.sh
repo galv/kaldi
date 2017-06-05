@@ -2,6 +2,7 @@
 export kaldiHome=`pwd`"/../../.."
 export decode_cmd="run.pl --mem 4G"
 export train_cmd="run.pl --mem 4G"
+export max_jobs_run=20
 mfccdir=`pwd`/mfcc
 modelDir=nnet2_online/nnet_ms_a_online
 graphDir=nnet2_online/nnet_ms_a_online/graph_test
@@ -36,7 +37,7 @@ utils/fix_data_dir.sh data/workfit
 echo "---------------------------------------"
 echo "Computing & normalizing mfcc features..."
 echo "---------------------------------------"
-steps/make_mfcc.sh --nj $jobs --cmd "$train_cmd" data/workfit exp/make_mfcc/workfit $mfccdir
+steps/make_mfcc.sh --nj $jobs --cmd "$train_cmd" --sample_frequency 16000 data/workfit exp/make_mfcc/workfit $mfccdir
 steps/compute_cmvn_stats.sh data/workfit exp/make_mfcc/workfit $mfccdir
 
 # decode
