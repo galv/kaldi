@@ -57,52 +57,57 @@ fi
 if [ $stage -le 1 ]; then
     mkdir -p $data_ark_dir
     for phone_number in "${phone_numbers[@]}"; do
-	mkdir -p $data_ark_dir/$phone_number
-	wav_scp=$data_ark_dir/$phone_number/wav.scp
-	spk2utt=$data_ark_dir/$phone_number/spk2utt.ark
-	# Truncate files, in case they already exist, since we will be
-	# appending to them.
-	rm -f $wav_scp
-	rm -f $spk2utt
-	for wav_file in $raw_wav_data/$phone_number/*.wav; do
-	    echo "$(basename $wav_file) $(realpath $wav_file)" >> $wav_scp
-	    echo "$(basename $wav_file) $(basename $wav_file)" >> $spk2utt
-	done
+	    mkdir -p $data_ark_dir/$phone_number
+	    wav_scp=$data_ark_dir/$phone_number/wav.scp
+	    spk2utt=$data_ark_dir/$phone_number/spk2utt.ark
+	    # Truncate files, in case they already exist, since we will be
+	    # appending to them.
+	    rm -f $wav_scp
+	    rm -f $spk2utt
+	    for wav_file in $raw_wav_data/$phone_number/*.wav; do
+	        echo "$(basename $wav_file) $(realpath $wav_file)" >> $wav_scp
+	        echo "$(basename $wav_file) $(basename $wav_file)" >> $spk2utt
+	    done
     done
 fi
 
-# Actually transcribe the lattices
+# prepare negative evaluation data (data which does not contain any of the commands)
 if [ $stage -le 2 ]; then
+    
+fi
+
+# Actually transcribe the lattices
+if [ $stage -le 3 ]; then
     mkdir -p $lattice_ark_dir
 
     for phone_number in "${phone_numbers[@]}"; do
-	spk2utt=$data_ark_dir/$phone_number/spk2utt.ark
-	wav_scp=$data_ark_dir/$phone_number/wav.scp
-	lat_ark=$lattice_ark_dir/$phone_number.ark
+	    spk2utt=$data_ark_dir/$phone_number/spk2utt.ark
+	    wav_scp=$data_ark_dir/$phone_number/wav.scp
+	    lat_ark=$lattice_ark_dir/$phone_number.ark
 	
-	online2-wav-nnet3-latgen-faster \
-	    --online=false \
-	    --do-endpointing=false \
-	    --frame-subsampling-factor=3 \
-	    --config=$new_grammar_online_model/conf/online.conf \
-	    --max-active=7000 \
-	    --beam=15.0 \
-	    --lattice-beam=6.0 \
-	    --acoustic-scale=1.0 \
-	    --word-symbol-table=$graph/words.txt \
-	    $original_online_model/final.mdl \
-	    $graph/HCLG.fst \
-	    "ark:$spk2utt" \
-	    "scp:$wav_scp" \
-	    "ark:$lat_ark" &
+	    online2-wav-nnet3-latgen-faster \
+	        --online=true \
+	        --do-endpointing=false \
+	        --frame-subsampling-factor=3 \
+	        --config=$new_grammar_online_model/conf/online.conf \
+	        --max-active=7000 \
+	        --beam=15.0 \
+	        --lattice-beam=6.0 \
+	        --acoustic-scale=1.0 \
+	        --word-symbol-table=$graph/words.txt \
+	        $original_online_model/final.mdl \
+	        $graph/HCLG.fst \
+	        "ark:$spk2utt" \
+	        "scp:$wav_scp" \
+	        "ark:$lat_ark" &
     done
     wait
 fi
 
-if [ $stage -le 3 ]; then
+if [ $stage -le 4 ]; then
 
     online2-wav-nnet3-latgen-faster \
-	--online=false \
+	--online=true \
 	--do-endpointing=false \
 	--frame-subsampling-factor=3 \
 	--config=$new_grammar_online_model/conf/online.conf \
@@ -120,6 +125,6 @@ fi
 
 # Possibly do kws on the lattices? Doesn't seem necessary. Probably
 # want to make my own C executable callable from Go.
-if [ $stage -le 4 ]; then
+if [ $stage -le 5 ]; then
     exit "TODO"
 fi
