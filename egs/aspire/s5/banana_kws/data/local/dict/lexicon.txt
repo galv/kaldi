@@ -1,5 +1,9 @@
-eva 1.0	ey v ah
-eva 1.0	iy v ah
-okay 1.0	ow k ey
-action 1.0	ae k sh ah n
-item 1.0	ay t ah m
+eva    ey v ah
+eva    iy v ah
+okay   ow k ey
+action ae k sh ah n
+thanks th ae ng k s
+item   ay t ah m
+<unk>  oov
+[laughter] laughter
+[noise] noise

@@ -1,0 +1,9 @@
+eva    1.0	ey v ah
+eva    1.0	iy v ah
+okay   1.0	ow k ey
+action 1.0	ae k sh ah n
+thanks 1.0	th ae ng k s
+item   1.0	ay t ah m
+<unk>  1.0	oov
+[laughter] 1.0	laughter
+[noise] 1.0	noise
