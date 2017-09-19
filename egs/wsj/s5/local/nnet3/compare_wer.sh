@@ -59,7 +59,7 @@ set_names() {
 
 
 echo -n "# System               "
-for x in $*; do   printf "% 10s" " $(basename $x)";   done
+for x in "$@"; do   printf "% 10s" " $(basename $x)";   done
 echo
 
 strings=(
@@ -74,7 +74,7 @@ strings=(
 
 for n in 0 1 2 3 4 5 6 7; do
    echo -n "${strings[$n]}"
-   for x in $*; do
+   for x in "$@"; do
      set_names $x  # sets $dirname and $epoch_infix
      decode_names=(tgpr_dev93 tg_dev93 bd_tgpr_dev93 bd_tgpr_dev93_fg tgpr_eval92 tg_eval92 bd_tgpr_eval92 bd_tgpr_eval92_fg)
 
@@ -84,7 +84,7 @@ for n in 0 1 2 3 4 5 6 7; do
    echo
    if $include_looped; then
      echo -n "#             [looped:]    "
-     for x in $*; do
+     for x in "$@"; do
        set_names $x  # sets $dirname and $epoch_infix
        wer=$(cat $dirname/decode_looped_${decode_names[$n]}$epoch_infix/scoring_kaldi/best_wer | utils/best_wer.sh | awk '{print $2}')
        printf "% 10s" $wer
@@ -93,7 +93,7 @@ for n in 0 1 2 3 4 5 6 7; do
    fi
    if $include_online; then
      echo -n "#             [online:]    "
-     for x in $*; do
+     for x in "$@"; do
        set_names $x  # sets $dirname and $epoch_infix
        wer=$(cat ${dirname}_online/decode_${decode_names[$n]}$epoch_infix/scoring_kaldi/best_wer | utils/best_wer.sh | awk '{print $2}')
        printf "% 10s" $wer
@@ -109,28 +109,28 @@ fi
 
 
 echo -n "# Final train prob     "
-for x in $*; do
+for x in "$@"; do
   prob=$(grep Overall $x/log/compute_prob_train.{final,combined}.log 2>/dev/null | grep log-like | awk '{printf("%.4f", $8)}')
   printf "% 10s" $prob
 done
 echo
 
 echo -n "# Final valid prob     "
-for x in $*; do
+for x in "$@"; do
   prob=$(grep Overall $x/log/compute_prob_valid.{final,combined}.log 2>/dev/null | grep log-like | awk '{printf("%.4f", $8)}')
   printf "% 10s" $prob
 done
 echo
 
 echo -n "# Final train acc      "
-for x in $*; do
+for x in "$@"; do
   prob=$(grep Overall $x/log/compute_prob_train.{final,combined}.log 2>/dev/null | grep accuracy | awk '{printf("%.4f", $8)}')
   printf "% 10s" $prob
 done
 echo
 
 echo -n "# Final valid acc      "
-for x in $*; do
+for x in "$@"; do
   prob=$(grep Overall $x/log/compute_prob_valid.{final,combined}.log 2>/dev/null | grep accuracy | awk '{printf("%.4f", $8)}')
   printf "% 10s" $prob
 done

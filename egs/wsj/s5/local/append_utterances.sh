@@ -7,10 +7,10 @@
 pad_silence=0.5
 # End configuration section.
 
-echo "$0 $@"
+echo "$0 $*"
 
 [ -f ./path.sh ] && . ./path.sh
-. parse_options.sh || exit 1;
+. utils/parse_options.sh || exit 1;
 
 if [ $# -ne 2 ]; then
   echo "Usage: $0 [options] <input-dir> <output-dir>"
@@ -27,8 +27,12 @@ for f in spk2gender spk2utt text utt2spk wav.scp; do
 done
 
 # Checks if sox is on the path.
-sox=`which sox`
-[ $? -ne 0 ] && "sox: command not found." && exit 1;
+#sox=`which sox`
+#[ $? -ne 0 ] && "sox: command not found." && exit 1;
+if ! sox=`which sox`; then
+  echo "sox: command not found";
+  exit 1;
+fi
 sph2pipe=$KALDI_ROOT/tools/sph2pipe_v2.5/sph2pipe
 [ ! -x $sph2pipe ] && "sph2pipe: command not found." && exit 1;
 

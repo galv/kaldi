@@ -9,7 +9,7 @@ set -e
 # - Arnab Ghoshal, 29/05/12
 
 if [ $# -ne 1 ]; then
-  printf "\nUSAGE: %s <corpus-directory>\n\n" `basename $0`
+  printf "\nUSAGE: %s <corpus-directory>\n\n" "`basename $0`"
   echo "The argument should be a the top-level WSJ corpus directory."
   echo "It is assumed that there will be a 'wsj0' and a 'wsj1' subdirectory"
   echo "within the top-level corpus directory."
@@ -169,7 +169,7 @@ prune-lm --threshold=1e-7 $lmdir/lm_tg_5k.arpa.gz $lmdir/lm_tgpr_5k.arpa || exit
 gzip -f $lmdir/lm_tgpr_5k.arpa || exit 1;
 
 
-if [ ! -f wsj0-train-spkrinfo.txt ] || [ `cat wsj0-train-spkrinfo.txt | wc -l` -ne 134 ]; then
+if [ ! -f wsj0-train-spkrinfo.txt ] || [ "`cat wsj0-train-spkrinfo.txt | wc -l`" -ne 134 ]; then
   rm -f wsj0-train-spkrinfo.txt
   wget https://catalog.ldc.upenn.edu/docs/LDC93S6A/wsj0-train-spkrinfo.txt \
     || ( echo "Getting wsj0-train-spkrinfo.txt from backup location" && \

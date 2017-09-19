@@ -8,7 +8,7 @@
 
 dict_suffix=
 
-echo "$0 $@"  # Print the command line for logging
+echo "$0 $*"  # Print the command line for logging
 . utils/parse_options.sh || exit 1;
 
 dir=data/local/local_lm
@@ -34,7 +34,7 @@ export PATH=$KALDI_ROOT/tools/kaldi_lm:$PATH
 
 
 
-if [ ! -f $srcdir/cleaned.gz -o ! -f $srcdir/lexicon.txt ]; then
+if [ ! -f $srcdir/cleaned.gz ] || [ ! -f $srcdir/lexicon.txt ]; then
   echo "Expecting files $srcdir/cleaned.gz and $srcdir/lexicon.txt to exist";
   echo "You need to run local/wsj_extend_dict.sh before running this script."
   exit 1;
@@ -194,8 +194,8 @@ gunzip -c $srcdir/cleaned.gz | tail -n +$heldout_sent | add-start-end.sh | \
   gzip -c > $idir/train.gz
 
 dict -i=WSJ.cleaned.irstlm.txt -o=dico -f=y -sort=no
- cat dico | gawk 'BEGIN{while (getline<"vocab.20k.nooov") v[$1]=1; print "DICTIONARY 0 "length(v);}FNR>1{if ($1 in v)\
-{print $0;}}' > vocab.irstlm.20k
+ cat dico | gawk 'BEGIN{while (getline<"vocab.20k.nooov") v[$1]=1; print "DICTIONARY 0 "length(v);}FNR>1{if ($1 in v)'\
+'{print $0;}}' > vocab.irstlm.20k
 
 
 build-lm.sh -i "gunzip -c $idir/train.gz" -o $idir/lm_3gram.gz  -p yes \

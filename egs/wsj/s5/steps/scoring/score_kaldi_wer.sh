@@ -18,9 +18,9 @@ max_lmwt=17
 iter=final
 #end configuration section.
 
-echo "$0 $@"  # Print the command line for logging
+echo "$0 $*"  # Print the command line for logging
 [ -f ./path.sh ] && . ./path.sh
-. parse_options.sh || exit 1;
+. utils/parse_options.sh || exit 1;
 
 if [ $# -ne 3 ]; then
   echo "Usage: $0 [--cmd (run.pl|queue.pl...)] <data-dir> <lang-dir|graph-dir> <decode-dir>"

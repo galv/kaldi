@@ -46,7 +46,7 @@ frames_per_chunk=
 
 #End configuration section
 
-echo "$0 $@" # Print the command line for logging
+echo "$0 $*" # Print the command line for logging
 
 . ./cmd.sh
 . ./path.sh
@@ -70,7 +70,7 @@ local/nnet3/run_ivector_common.sh --stage $stage || exit 1;
 if [ $stage -le 8 ]; then
   if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $dir/egs/storage ]; then
     utils/create_split_dir.pl \
-     /export/b0{3,4,5,6}/$USER/kaldi-data/egs/wsj-$(date +'%m_%d_%H_%M')/s5/$dir/egs/storage $dir/egs/storage
+     /export/b0{3,4,5,6}/$USER/kaldi-data/egs/wsj-"$(date +'%m_%d_%H_%M')"/s5/$dir/egs/storage $dir/egs/storage
   fi
 
   steps/nnet3/lstm/train.sh --stage $train_stage \

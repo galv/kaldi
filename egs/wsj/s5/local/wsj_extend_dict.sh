@@ -14,7 +14,7 @@
 
 dict_suffix=
 
-echo "$0 $@"  # Print the command line for logging
+echo "$0 $*"  # Print the command line for logging
 . utils/parse_options.sh || exit 1;
 
 if [ $# -ne 1 ]; then
@@ -62,7 +62,7 @@ echo "Getting training data [this should take at least a few seconds; if not, th
 # oov.counts below (before adding this rule).
 
 touch $dir/cleaned.gz
-if [ `du -m $dir/cleaned.gz | cut -f 1` -eq 73 ]; then
+if [ "`du -m $dir/cleaned.gz | cut -f 1`" -eq 73 ]; then
   echo "Not getting cleaned data in $dir/cleaned.gz again [already exists]";
 else
  gunzip -c $srcdir/wsj1/doc/lng_modl/lm_train/np_data/{87,88,89}/*.z \
@@ -131,7 +131,7 @@ reverse_dict.pl $dir/f/oovs > $dir/b/oovs
 # that it finds.
 for d in $dir/f $dir/b; do
  (
-   cd $d
+   cd $d || exit 1;
    cat dict | get_rules.pl 2>get_rules.log >rules
    get_rule_hierarchy.pl rules >hierarchy
    awk '{print $1}' dict | get_candidate_prons.pl rules dict | \
@@ -170,7 +170,7 @@ head $dir/oovlist.not_handled.counts
 echo "Count of OOVs we handled is `awk '{x+=$1} END{print x}' $dir/oovlist.handled.counts`"
 echo "Count of OOVs we couldn't handle is `awk '{x+=$1} END{print x}' $dir/oovlist.not_handled.counts`"
 echo "Count of OOVs we didn't handle due to low count is" \
-    `awk -v thresh=$mincount '{if ($1 < thresh) x+=$1; } END{print x;}' $dir/oov.counts`
+    "`awk -v thresh=$mincount '{if ($1 < thresh) x+=$1; } END{print x;}' $dir/oov.counts`"
 # The two files created above are for humans to look at, as diagnostics.
 
 cat <<EOF | cat - $dir/dict.cmu $dir/dict.oovs_merged | sort | uniq > $dir/lexicon.txt

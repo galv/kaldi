@@ -11,7 +11,7 @@ max_lmwt=17
 #end configuration section.
 
 [ -f ./path.sh ] && . ./path.sh
-. parse_options.sh || exit 1;
+. utils/parse_options.sh || exit 1;
 
 if [ $# -ne 3 ]; then
   echo "Usage: local/score_mbr.sh [--cmd (run.pl|queue.pl...)] <data-dir> <lang-dir|graph-dir> <decode-dir>"

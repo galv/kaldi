@@ -31,7 +31,7 @@
 # run this from ../
 dict_suffix=
 
-echo "$0 $@"  # Print the command line for logging
+echo "$0 $*"  # Print the command line for logging
 . utils/parse_options.sh || exit 1;
 
 dir=data/local/dict${dict_suffix}

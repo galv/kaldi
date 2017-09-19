@@ -29,7 +29,7 @@ max_lmwt=17
 lat_weights=
 #end configuration section.
 
-help_message="Usage: "$(basename $0)" [options] <data-dir> <graph-dir|lang-dir> <decode-dir1> <decode-dir2> [decode-dir3 ... ] <out-dir>
+help_message="Usage: $(basename $0) [options] <data-dir> <graph-dir|lang-dir> <decode-dir1> <decode-dir2> [decode-dir3 ... ] <out-dir>
 Options:
   --cmd (run.pl|queue.pl...)      # specify how to run the sub-processes.
   --min-lmwt INT                  # minumum LM-weight for lattice rescoring 
@@ -38,10 +38,10 @@ Options:
 ";
 
 [ -f ./path.sh ] && . ./path.sh
-. parse_options.sh || exit 1;
+. utils/parse_options.sh || exit 1;
 
 if [ $# -lt 5 ]; then
-  printf "$help_message\n";
+  printf "%s\n" "$help_message";
   exit 1;
 fi
 
@@ -49,7 +49,7 @@ data=$1
 graphdir=$2
 odir=${@: -1}  # last argument to the script
 shift 2;
-decode_dirs=( $@ )  # read the remaining arguments into an array
+decode_dirs=( "$@" )  # read the remaining arguments into an array
 unset decode_dirs[${#decode_dirs[@]}-1]  # 'pop' the last argument which is odir
 num_sys=${#decode_dirs[@]}  # number of systems to combine
 
@@ -60,7 +60,7 @@ symtab=$graphdir/words.txt
 
 mkdir -p $odir/log
 
-for i in `seq 0 $[num_sys-1]`; do
+for i in `seq 0 $((num_sys-1))`; do
   model=${decode_dirs[$i]}/../final.mdl  # model one level up from decode dir
   for f in $model ${decode_dirs[$i]}/lat.1.gz ; do
     [ ! -f $f ] && echo "$0: expecting file $f to exist" && exit 1;
@@ -75,13 +75,13 @@ cat $data/text | sed 's:<NOISE>::g' | sed 's:<SPOKEN_NOISE>::g' \
 
 if [ -z "$lat_weights" ]; then
   $cmd LMWT=$min_lmwt:$max_lmwt $odir/log/combine_lats.LMWT.log \
-    lattice-combine --inv-acoustic-scale=LMWT ${lats[@]} ark:- \| \
+    lattice-combine --inv-acoustic-scale=LMWT "${lats[@]}" ark:- \| \
     lattice-mbr-decode --word-symbol-table=$symtab ark:- \
     ark,t:$odir/scoring/LMWT.tra || exit 1;
 else
   $cmd LMWT=$min_lmwt:$max_lmwt $odir/log/combine_lats.LMWT.log \
     lattice-combine --inv-acoustic-scale=LMWT --lat-weights=$lat_weights \
-    ${lats[@]} ark:- \| \
+    "${lats[@]}" ark:- \| \
     lattice-mbr-decode --word-symbol-table=$symtab ark:- \
     ark,t:$odir/scoring/LMWT.tra || exit 1;
 fi
