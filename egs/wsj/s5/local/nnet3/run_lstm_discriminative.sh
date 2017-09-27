@@ -119,8 +119,8 @@ fi
 model_left_context=`nnet3-am-info $srcdir/final.mdl | grep "left-context:" | awk '{print $2}'`
 model_right_context=`nnet3-am-info $srcdir/final.mdl | grep "right-context:" | awk '{print $2}'`
 
-left_context=$[model_left_context + extra_left_context]
-right_context=$[model_right_context + extra_right_context]
+left_context=$((model_left_context + extra_left_context))
+right_context=$((model_right_context + extra_right_context))
 
 frame_subsampling_opt=
 if [ -f $srcdir/frame_subsampling_factor ]; then
@@ -135,7 +135,7 @@ if [ -z "$degs_dir" ]; then
   if [ $stage -le 3 ]; then
     if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d ${srcdir}_degs/storage ]; then
       utils/create_split_dir.pl \
-        /export/b0{1,2,12,13}/$USER/kaldi-data/egs/swbd-$(date +'%m_%d_%H_%M')/s5/${srcdir}_degs/storage ${srcdir}_degs/storage
+        /export/b0{1,2,12,13}/$USER/kaldi-data/egs/swbd-"$(date +'%m_%d_%H_%M')"/s5/${srcdir}_degs/storage ${srcdir}_degs/storage
     fi
     # have a higher maximum num-jobs if
     if [ -d ${srcdir}_degs/storage ]; then max_jobs=10; else max_jobs=5; fi

@@ -115,7 +115,7 @@ if [ -z "$degs_dir" ]; then
   if [ $stage -le 2 ]; then
     if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d ${srcdir}_degs/storage ]; then
       utils/create_split_dir.pl \
-        /export/b{09,10,11,12}/$USER/kaldi-data/egs/tedlium-$(date +'%m_%d_%H_%M')/s5_r2/${srcdir}_degs/storage ${srcdir}_degs/storage
+        /export/b{09,10,11,12}/$USER/kaldi-data/egs/tedlium-"$(date +'%m_%d_%H_%M')"/s5_r2/${srcdir}_degs/storage ${srcdir}_degs/storage
     fi
     if [ -d ${srcdir}_degs/storage ]; then max_copy_jobs=10; else max_copy_jobs=5; fi
 

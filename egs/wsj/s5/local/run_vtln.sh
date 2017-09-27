@@ -2,7 +2,7 @@
 
 lang_suffix=
 
-echo "$0 $@"  # Print the command line for logging
+echo "$0 $*"  # Print the command line for logging
 . utils/parse_options.sh || exit 1;
 
 . cmd.sh

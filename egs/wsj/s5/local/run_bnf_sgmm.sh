@@ -24,7 +24,7 @@ if [ ! -d exp_bnf ]; then
 fi
 
 echo ---------------------------------------------------------------------
-echo "Starting exp_bnf/tri5 on" `date`
+echo "Starting exp_bnf/tri5 on" "`date`"
 echo ---------------------------------------------------------------------
 if [ ! exp_bnf/tri5/.done -nt data_bnf/train/.done ]; then
   steps/train_lda_mllt.sh --splice-opts "--left-context=1 --right-context=1" \
@@ -34,7 +34,7 @@ if [ ! exp_bnf/tri5/.done -nt data_bnf/train/.done ]; then
 fi
 
 echo ---------------------------------------------------------------------
-echo "Starting exp_bnf/tri6 on" `date`
+echo "Starting exp_bnf/tri6 on" "`date`"
 echo ---------------------------------------------------------------------
 if [ ! exp_bnf/tri6/.done -nt exp_bnf/tri5/.done ]; then
   steps/train_sat.sh  --cmd "$train_cmd" \
@@ -42,7 +42,7 @@ if [ ! exp_bnf/tri6/.done -nt exp_bnf/tri5/.done ]; then
   touch exp_bnf/tri6/.done
 fi
 echo ---------------------------------------------------------------------
-echo "Decoding with SAT models on top of bottleneck features on" `date`
+echo "Decoding with SAT models on top of bottleneck features on" "`date`"
 echo ---------------------------------------------------------------------
 decode1=exp_bnf/tri6/decode_bd_tgpr_eval92
 decode2=exp_bnf/tri6/decode_bd_tgpr_dev93
@@ -60,7 +60,7 @@ steps/decode_fmllr_extra.sh --skip-scoring true --beam 10 --lattice-beam 4 \
   exp_bnf/tri6/graph_bd_tgpr data_bnf/dev93 ${decode2} |tee ${decode2}/decode.log
 
 echo ---------------------------------------------------------------------
-echo "Starting exp_bnf/ubm7 on" `date`
+echo "Starting exp_bnf/ubm7 on" "`date`"
 echo ---------------------------------------------------------------------
 if [ ! exp_bnf/ubm7/.done -nt exp_bnf/tri6/.done ]; then
   steps/train_ubm.sh \
@@ -70,10 +70,10 @@ fi
 
 if [ ! exp_bnf/sgmm7/.done -nt exp_bnf/ubm7/.done ]; then
   echo ---------------------------------------------------------------------
-  echo "Starting exp_bnf/sgmm7 on" `date`
+  echo "Starting exp_bnf/sgmm7 on" "`date`"
   echo ---------------------------------------------------------------------
   steps/train_sgmm2_group.sh \
-    "${sgmm_group_extra_opts[@]}"\
+    "${sgmm_group_extra_opts[*]}"\
     $numLeavesSGMM $bnf_num_gauss_sgmm data_bnf/train data/lang \
     exp_bnf/tri6 exp_bnf/ubm7/final.ubm exp_bnf/sgmm7
   touch exp_bnf/sgmm7/.done
@@ -83,7 +83,7 @@ fi
 decode1=exp_bnf/sgmm7/decode_bd_tgpr_eval92
 decode2=exp_bnf/sgmm7/decode_bd_tgpr_dev93
   echo ---------------------------------------------------------------------
-  echo "Spawning $decode1 and $decode2 on" `date`
+  echo "Spawning $decode1 and $decode2 on" "`date`"
   echo ---------------------------------------------------------------------
   utils/mkgraph.sh \
     data/lang_test_bd_tgpr exp_bnf/sgmm7 exp_bnf/sgmm7/graph_bd_tgpr |tee exp_bnf/sgmm7/mkgraph.log
@@ -100,7 +100,7 @@ decode2=exp_bnf/sgmm7/decode_bd_tgpr_dev93
 
 if [ ! exp_bnf/sgmm7_ali/.done -nt exp_bnf/sgmm7/.done ]; then
   echo ---------------------------------------------------------------------
-  echo "Starting exp_bnf/sgmm7_ali on" `date`
+  echo "Starting exp_bnf/sgmm7_ali on" "`date`"
   echo ---------------------------------------------------------------------
   steps/align_sgmm2.sh \
     --transform-dir exp_bnf/tri6 --nj 30 --use-graphs true \
@@ -110,7 +110,7 @@ fi
 
 if [ ! exp_bnf/sgmm7_denlats/.done -nt exp_bnf/sgmm7/.done ]; then
   echo ---------------------------------------------------------------------
-  echo "Starting exp_bnf/sgmm5_denlats on" `date`
+  echo "Starting exp_bnf/sgmm5_denlats on" "`date`"
   echo ---------------------------------------------------------------------
   steps/make_denlats_sgmm2.sh \
      "${sgmm_denlats_extra_opts[@]}" \
@@ -148,7 +148,7 @@ for iter in 1 2 3 4; do
 done
 
 echo ---------------------------------------------------------------------
-echo "Finished successfully on" `date`
+echo "Finished successfully on" "`date`"
 echo ---------------------------------------------------------------------
 
 #exit 1

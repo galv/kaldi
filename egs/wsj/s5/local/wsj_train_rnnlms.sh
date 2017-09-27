@@ -43,7 +43,7 @@ $KALDI_ROOT/tools/extras/check_for_rnnlm.sh "$rnnlm_ver" || exit 1
 export PATH=$KALDI_ROOT/tools/$rnnlm_ver:$PATH
 
 
-if [ ! -f $srcdir/cleaned.gz -o ! -f $srcdir/lexicon.txt ]; then
+if [ ! -f $srcdir/cleaned.gz ] || [ ! -f $srcdir/lexicon.txt ]; then
   echo "Expecting files $srcdir/cleaned.gz and $srcdir/wordlist.final to exist";
   echo "You need to run local/wsj_extend_dict.sh before running this script."
   exit 1;

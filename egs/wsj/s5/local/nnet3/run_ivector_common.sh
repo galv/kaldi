@@ -57,7 +57,7 @@ if [ $stage -le 2 ]; then
   # them overwrite each other.
   mfccdir=data/${train_set}_sp_hires/data
   if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $mfccdir/storage ]; then
-    utils/create_split_dir.pl /export/b0{5,6,7,8}/$USER/kaldi-data/egs/wsj-$(date +'%m_%d_%H_%M')/s5/$mfccdir/storage $mfccdir/storage
+    utils/create_split_dir.pl /export/b0{5,6,7,8}/$USER/kaldi-data/egs/wsj-"$(date +'%m_%d_%H_%M')"/s5/$mfccdir/storage $mfccdir/storage
   fi
 
   for datadir in ${train_set}_sp ${test_sets}; do
@@ -84,7 +84,7 @@ if [ $stage -le 3 ]; then
 
   # train a diagonal UBM using a subset of about a quarter of the data
   num_utts_total=$(wc -l <data/${train_set}_sp_hires/utt2spk)
-  num_utts=$[$num_utts_total/4]
+  num_utts=$((num_utts_total/4))
   utils/data/subset_data_dir.sh data/${train_set}_sp_hires \
       $num_utts ${temp_data_root}/${train_set}_sp_hires_subset
 
@@ -120,7 +120,7 @@ if [ $stage -le 5 ]; then
   # valid for the non-'max2' data; the utterance list is the same.
   ivectordir=exp/nnet3${nnet3_affix}/ivectors_${train_set}_sp_hires
   if [[ $(hostname -f) == *.clsp.jhu.edu ]] && [ ! -d $ivectordir/storage ]; then
-    utils/create_split_dir.pl /export/b0{5,6,7,8}/$USER/kaldi-data/egs/wsj-$(date +'%m_%d_%H_%M')/s5/$ivectordir/storage $ivectordir/storage
+    utils/create_split_dir.pl /export/b0{5,6,7,8}/$USER/kaldi-data/egs/wsj-"$(date +'%m_%d_%H_%M')"/s5/$ivectordir/storage $ivectordir/storage
   fi
 
   # We now extract iVectors on the speed-perturbed training data .  With
