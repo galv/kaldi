@@ -148,13 +148,17 @@ MessageLogger::MessageLogger(LogMessageEnvelope::Severity severity,
 
 
 MessageLogger::~MessageLogger() KALDI_NOEXCEPT(false) {
+  std::string str = GetMessage();
+  // print the mesage (or send to logging handler),
+  MessageLogger::HandleMessage(envelope_, str.c_str());
+}
+
+std::string MessageLogger::GetMessage() const {
   // remove trailing '\n',
   std::string str = ss_.str();
   while (!str.empty() && str[str.length() - 1] == '\n')
     str.resize(str.length() - 1);
-
-  // print the mesage (or send to logging handler),
-  MessageLogger::HandleMessage(envelope_, str.c_str());
+  return str;
 }
 
 
@@ -204,11 +208,22 @@ void MessageLogger::HandleMessage(const LogMessageEnvelope &envelope,
   }
 }
 
-FatalMessageLogger::~FatalMessageLogger() KALDI_NOEXCEPT(false) {
-  // remove trailing '\n',
-  std::string str = ss_.str();
-  while (!str.empty() && str[str.length() - 1] == '\n')
-    str.resize(str.length() - 1);
+FatalMessageLogger::FatalMessageLogger(LogMessageEnvelope::Severity severity,
+                                       const char *func, const char *file,
+                                       int32 line):
+  MessageLogger(severity, func, file, line) {
+  if (severity != LogMessageEnvelope::kAssertFailed &&
+      severity != LogMessageEnvelope::kError) {
+    // Don't use KALDI_ERR, since that will recursively instantiate
+    // MessageLogger.
+    throw std::runtime_error("FatalMessageLogger should be called only with "
+                             "severities kAssertFailed and kError");
+  }
+}
+  
+
+[[ noreturn ]] FatalMessageLogger::~FatalMessageLogger() KALDI_NOEXCEPT(false) {
+  std::string str = GetMessage();
 
   // print the mesage (or send to logging handler),
   MessageLogger::HandleMessage(envelope_, str.c_str());
@@ -231,7 +246,9 @@ FatalMessageLogger::~FatalMessageLogger() KALDI_NOEXCEPT(false) {
         abort();
       }
       break;
-  default:
+  default: // This should never happen, based on constructor's
+           // preconditions. But we place abort() here so that all
+           // possible pathways through this function do not return.
     abort();
   }
 }

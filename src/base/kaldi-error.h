@@ -115,18 +115,21 @@ public:
   inline std::ostream &stream() { return ss_; }
 
 protected:
+  std::string GetMessage() const;
   /// The logging function,
   static void HandleMessage(const LogMessageEnvelope &env, const char *msg);
 
+protected:
   LogMessageEnvelope envelope_;
+
+private:
   std::ostringstream ss_;
 };
 
 class FatalMessageLogger: public MessageLogger {
 public:
   FatalMessageLogger(LogMessageEnvelope::Severity severity,
-                     const char *func, const char *file, int32 line):
-    MessageLogger(severity, func, file, line) {}
+                     const char *func, const char *file, int32 line);
 
   [[ noreturn ]] ~FatalMessageLogger() KALDI_NOEXCEPT(false);
 };
@@ -148,8 +151,8 @@ public:
 
 /***** KALDI ASSERTS *****/
 
-[[noreturn]] void KaldiAssertFailure_(const char *func, const char *file,
-                                      int32 line, const char *cond_str);
+[[ noreturn ]] void KaldiAssertFailure_(const char *func, const char *file,
+                                        int32 line, const char *cond_str);
 
 // Note on KALDI_ASSERT and KALDI_PARANOID_ASSERT
 // The original (simple) version of the code was this
