@@ -99,7 +99,7 @@ void pybind_decodable_matrix_mapped_offset(py::module& m) {
 void pybind_decodable_matrix_scaled(py::module& m) {
   using PyClass = DecodableMatrixScaled;
   py::class_<PyClass, DecodableInterface>(m, "DecodableMatrixScaled")
-      .def(py::init<const Matrix<BaseFloat>&, BaseFloat>(), py::arg("likes"),
+      .def(py::init<const MatrixBase<BaseFloat>&, BaseFloat>(), py::arg("likes"),
            py::arg("scale"));
 }
 

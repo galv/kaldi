@@ -135,14 +135,9 @@ void pybind_symbol_table(py::module& m) {
              "range (<0, >max), returns an empty string.",
              py::arg("key"))
         .def("Find",
-             (int64 (PyClass::*)(const fst::string&) const) & PyClass::Find,
+             py::overload_cast<const fst::string&>(&PyClass::Find, py::const_),
              "Returns the key associated with the symbol; if the symbol does "
              "not exist, kNoSymbol is returned.",
-             py::arg("symbol"))
-        .def("Find", (int64 (PyClass::*)(const char*) const) & PyClass::Find,
-             "Returns the key associated with the symbol; if the symbol does "
-             "not exist,"
-             "kNoSymbol is returned.",
              py::arg("symbol"))
         .def("Member", (bool (PyClass::*)(int64) const) & PyClass::Member,
              py::arg("key"))

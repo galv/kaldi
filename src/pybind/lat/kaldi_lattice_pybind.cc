@@ -29,12 +29,14 @@ using namespace kaldi;
 
 void pybind_kaldi_lattice(py::module& m) {
   pybind_arc_impl<LatticeWeight>(m, "LatticeArc");
+  pybind_fst_impl<LatticeArc>(m, "GenericLattice");
   pybind_vector_fst_impl<LatticeArc>(m, "Lattice");
   pybind_state_iterator_impl<Lattice>(m, "LatticeStateIterator");
   pybind_arc_iterator_impl<Lattice>(m, "LatticeArcIterator");
   pybind_mutable_arc_iterator_impl<Lattice>(m, "LatticeMutableArcIterator");
 
   pybind_arc_impl<CompactLatticeWeight>(m, "CompactLatticeArc");
+  pybind_fst_impl<CompactLatticeArc>(m, "GenericCompactLattice");
   pybind_vector_fst_impl<CompactLatticeArc>(m, "CompactLattice");
   pybind_state_iterator_impl<CompactLattice>(m, "CompactLatticeStateIterator");
   pybind_arc_iterator_impl<CompactLattice>(m, "CompactLatticeArcIterator");

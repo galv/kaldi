@@ -56,7 +56,7 @@ void pybind_vector_fst_impl(py::module& m, const std::string& class_name,
   using StateId = typename PyClass::StateId;
   using State = typename PyClass::State;
 
-  py::class_<PyClass>(m, class_name.c_str(), class_help_doc.c_str())
+  py::class_<PyClass, fst::Fst<A>>(m, class_name.c_str(), class_help_doc.c_str())
       .def(py::init<>())
       .def(py::init<const fst::Fst<Arc>&>(), py::arg("fst"))
       .def(py::init<const PyClass&, bool>(), py::arg("fst"),
@@ -68,16 +68,18 @@ void pybind_vector_fst_impl(py::module& m, const std::string& class_name,
       .def("SetProperties", &PyClass::SetProperties, py::arg("props"),
            py::arg("mask"))
       .def("AddState", (StateId (PyClass::*)()) & PyClass::AddState)
-      .def("AddArc", &PyClass::AddArc, py::arg("s"), py::arg("arc"))
-      .def("DeleteStates", (void (PyClass::*)(const std::vector<StateId>&)) &
-                               PyClass::DeleteStates,
+      .def("AddArc", py::overload_cast<StateId, const Arc&>(&PyClass::AddArc),
+           py::arg("s"), py::arg("arc"))
+      .def("DeleteStates",
+           py::overload_cast<const std::vector<StateId>&>(&PyClass::DeleteStates),
            py::arg("dstates"))
-      .def("DeleteStates", (void (PyClass::*)()) & PyClass::DeleteStates,
+      .def("DeleteStates", py::overload_cast<>(&PyClass::DeleteStates),
            "Delete all states")
       .def("DeleteArcs",
-           (void (PyClass::*)(StateId, size_t)) & PyClass::DeleteArcs,
+           py::overload_cast<StateId, size_t>(&PyClass::DeleteArcs),
            py::arg("state"), py::arg("n"))
-      .def("DeleteArcs", (void (PyClass::*)(StateId)) & PyClass::DeleteArcs,
+      .def("DeleteArcs",
+           py::overload_cast<StateId>(&PyClass::DeleteArcs),
            py::arg("s"))
       .def("ReserveStates", &PyClass::ReserveStates, py::arg("s"))
       .def("ReserveArcs", &PyClass::ReserveArcs, py::arg("s"), py::arg("n"))
