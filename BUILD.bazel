@@ -1,0 +1,921 @@
+package(default_visibility = ["//visibility:public"])
+
+prefix_dir = "src/"
+cc_library(
+    name = "openblas",
+    srcs = ["tools/CLAPACK/libopenblas.so"],
+    hdrs = ["tools/CLAPACK/cblas.h", "tools/CLAPACK/f2c.h", "tools/CLAPACK/clapack.h"],
+    includes = ["tools/CLAPACK"],
+    defines = ["HAVE_CLAPACK"]
+)
+
+cc_library(
+   name="kaldi",
+   srcs = [
+	"src/base/kaldi-error.cc",
+	"src/base/kaldi-math.cc",
+	"src/base/io-funcs.cc",
+	"src/base/timer.cc",
+	"src/base/kaldi-utils.cc",
+	"src/matrix/kaldi-matrix.cc",
+	"src/matrix/packed-matrix.cc",
+	"src/matrix/tp-matrix.cc",
+	"src/matrix/qr.cc",
+	"src/matrix/compressed-matrix.cc",
+	"src/matrix/matrix-functions.cc",
+	"src/matrix/kaldi-vector.cc",
+	"src/matrix/sparse-matrix.cc",
+	"src/matrix/optimization.cc",
+	"src/matrix/sp-matrix.cc",
+	"src/matrix/srfft.cc",
+	"src/util/kaldi-semaphore.cc",
+	"src/util/parse-options.cc",
+	"src/util/kaldi-thread.cc",
+	"src/util/text-utils.cc",
+	"src/util/simple-io-funcs.cc",
+	"src/util/simple-options.cc",
+	"src/util/kaldi-table.cc",
+	"src/util/kaldi-holder.cc",
+	"src/util/kaldi-io.cc",
+	"src/feat/feature-mfcc.cc",
+	"src/feat/wave-reader.cc",
+	"src/feat/feature-plp.cc",
+	"src/feat/feature-functions.cc",
+	"src/feat/resample.cc",
+	"src/feat/signal.cc",
+	"src/feat/mel-computations.cc",
+	"src/feat/feature-fbank.cc",
+	"src/feat/feature-window.cc",
+	"src/feat/feature-spectrogram.cc",
+	"src/feat/online-feature.cc",
+	"src/feat/pitch-functions.cc",
+	"src/tree/context-dep.cc",
+	"src/tree/build-tree-questions.cc",
+	"src/tree/clusterable-classes.cc",
+	"src/tree/build-tree.cc",
+	"src/tree/event-map.cc",
+	"src/tree/cluster-utils.cc",
+	"src/tree/tree-renderer.cc",
+	"src/tree/build-tree-utils.cc",
+	"src/gmm/mle-am-diag-gmm.cc",
+	"src/gmm/indirect-diff-diag-gmm.cc",
+	"src/gmm/decodable-am-diag-gmm.cc",
+	"src/gmm/am-diag-gmm.cc",
+	"src/gmm/mle-diag-gmm.cc",
+	"src/gmm/diag-gmm.cc",
+	"src/gmm/model-test-common.cc",
+	"src/gmm/full-gmm-normal.cc",
+	"src/gmm/diag-gmm-normal.cc",
+	"src/gmm/model-common.cc",
+	"src/gmm/ebw-diag-gmm.cc",
+	"src/gmm/mle-full-gmm.cc",
+	"src/gmm/full-gmm.cc",
+	"src/transform/cmvn.cc",
+	"src/transform/lda-estimate.cc",
+	"src/transform/regtree-fmllr-diag-gmm.cc",
+	"src/transform/decodable-am-diag-gmm-regtree.cc",
+	"src/transform/fmllr-diag-gmm.cc",
+	"src/transform/regtree-mllr-diag-gmm.cc",
+	"src/transform/transform-common.cc",
+	"src/transform/mllt.cc",
+	"src/transform/fmpe.cc",
+	"src/transform/fmllr-raw.cc",
+	"src/transform/lvtln.cc",
+	"src/transform/basis-fmllr-diag-gmm.cc",
+	"src/transform/compressed-transform-stats.cc",
+	"src/transform/regression-tree.cc",
+	"src/sgmm2/decodable-am-sgmm2.cc",
+	"src/sgmm2/estimate-am-sgmm2-ebw.cc",
+	"src/sgmm2/am-sgmm2-project.cc",
+	"src/sgmm2/estimate-am-sgmm2.cc",
+	"src/sgmm2/am-sgmm2.cc",
+	"src/sgmm2/fmllr-sgmm2.cc",
+	"src/fstext/grammar-context-fst.cc",
+	"src/fstext/kaldi-fst-io.cc",
+	"src/fstext/context-fst.cc",
+	"src/fstext/push-special.cc",
+	"src/hmm/posterior.cc",
+	"src/hmm/tree-accu.cc",
+	"src/hmm/hmm-test-utils.cc",
+	"src/hmm/transition-model.cc",
+	"src/hmm/hmm-utils.cc",
+	"src/hmm/hmm-topology.cc",
+	"src/lm/mikolov-rnnlm-lib.cc",
+	"src/lm/const-arpa-lm.cc",
+	"src/lm/kaldi-rnnlm.cc",
+	"src/lm/arpa-file-parser.cc",
+	"src/lm/arpa-lm-compiler.cc",
+	"src/decoder/simple-decoder.cc",
+	"src/decoder/training-graph-compiler.cc",
+	"src/decoder/decodable-matrix.cc",
+	"src/decoder/lattice-incremental-online-decoder.cc",
+	"src/decoder/grammar-fst.cc",
+	"src/decoder/lattice-incremental-decoder.cc",
+	"src/decoder/decoder-wrappers.cc",
+	"src/decoder/faster-decoder.cc",
+	"src/decoder/lattice-faster-decoder.cc",
+	"src/decoder/lattice-faster-online-decoder.cc",
+	"src/decoder/lattice-simple-decoder.cc",
+	"src/lat/phone-align-lattice.cc",
+	"src/lat/determinize-lattice-pruned.cc",
+	"src/lat/sausages.cc",
+	"src/lat/compose-lattice-pruned.cc",
+	"src/lat/confidence.cc",
+	"src/lat/lattice-functions.cc",
+	"src/lat/kaldi-lattice.cc",
+	"src/lat/word-align-lattice.cc",
+	"src/lat/word-align-lattice-lexicon.cc",
+	"src/lat/push-lattice.cc",
+	"src/lat/minimize-lattice.cc",
+	"src/nnet/nnet-nnet.cc",
+	"src/nnet/nnet-randomizer.cc",
+	"src/nnet/nnet-component.cc",
+	"src/nnet/nnet-pdf-prior.cc",
+	"src/nnet/nnet-loss.cc",
+	"src/nnet2/nnet-nnet.cc",
+	"src/nnet2/nnet-fix.cc",
+	"src/nnet2/nnet-stats.cc",
+	"src/nnet2/train-nnet.cc",
+	"src/nnet2/am-nnet.cc",
+	"src/nnet2/nnet-compute.cc",
+	"src/nnet2/nnet-limit-rank.cc",
+	"src/nnet2/train-nnet-ensemble.cc",
+	"src/nnet2/combine-nnet-fast.cc",
+	"src/nnet2/nnet-precondition.cc",
+	"src/nnet2/combine-nnet.cc",
+	"src/nnet2/online-nnet2-decodable.cc",
+	"src/nnet2/nnet-compute-discriminative.cc",
+	"src/nnet2/combine-nnet-a.cc",
+	"src/nnet2/shrink-nnet.cc",
+	"src/nnet2/get-feature-transform.cc",
+	"src/nnet2/nnet-functions.cc",
+	"src/nnet2/nnet-component.cc",
+	"src/nnet2/nnet-compute-discriminative-parallel.cc",
+	"src/nnet2/nnet-compute-online.cc",
+	"src/nnet2/nnet-update-parallel.cc",
+	"src/nnet2/rescale-nnet.cc",
+	"src/nnet2/widen-nnet.cc",
+	"src/nnet2/nnet-example-functions.cc",
+	"src/nnet2/mixup-nnet.cc",
+	"src/nnet2/nnet-precondition-online.cc",
+	"src/nnet2/nnet-update.cc",
+	"src/nnet2/nnet-example.cc",
+	"src/nnet3/nnet-nnet.cc",
+	"src/nnet3/nnet-am-decodable-simple.cc",
+	"src/nnet3/nnet-test-utils.cc",
+	"src/nnet3/nnet-utils.cc",
+	"src/nnet3/nnet-diagnostics.cc",
+	"src/nnet3/discriminative-training.cc",
+	"src/nnet3/nnet-compute.cc",
+	"src/nnet3/discriminative-supervision.cc",
+	"src/nnet3/nnet-optimize.cc",
+	"src/nnet3/nnet-attention-component.cc",
+	"src/nnet3/decodable-simple-looped.cc",
+	"src/nnet3/nnet-computation-graph.cc",
+	"src/nnet3/nnet-discriminative-example.cc",
+	"src/nnet3/nnet-descriptor.cc",
+	"src/nnet3/decodable-online-looped.cc",
+	"src/nnet3/convolution.cc",
+	"src/nnet3/nnet-analyze.cc",
+	"src/nnet3/nnet-computation.cc",
+	"src/nnet3/nnet-training.cc",
+	"src/nnet3/attention.cc",
+	"src/nnet3/nnet-graph.cc",
+	"src/nnet3/nnet-parse.cc",
+	"src/nnet3/natural-gradient-online.cc",
+	"src/nnet3/nnet-example-utils.cc",
+	"src/nnet3/nnet-discriminative-diagnostics.cc",
+	"src/nnet3/nnet-chain-diagnostics.cc",
+	"src/nnet3/nnet-convolutional-component.cc",
+	"src/nnet3/nnet-compile-utils.cc",
+	"src/nnet3/nnet-normalize-component.cc",
+	"src/nnet3/nnet-compile-looped.cc",
+	"src/nnet3/nnet-component-itf.cc",
+	"src/nnet3/nnet-chain-training.cc",
+	"src/nnet3/nnet-chain-example.cc",
+	"src/nnet3/nnet-tdnn-component.cc",
+	"src/nnet3/nnet-optimize-utils.cc",
+	"src/nnet3/am-nnet-simple.cc",
+	"src/nnet3/nnet-compile.cc",
+	"src/nnet3/nnet-common.cc",
+	"src/nnet3/nnet-batch-compute.cc",
+	"src/nnet3/nnet-discriminative-training.cc",
+	"src/nnet3/nnet-combined-component.cc",
+	"src/nnet3/nnet-example.cc",
+	"src/nnet3/nnet-general-component.cc",
+	"src/nnet3/nnet-simple-component.cc",
+	"src/ivector/logistic-regression.cc",
+	"src/ivector/plda.cc",
+	"src/ivector/ivector-extractor.cc",
+	"src/ivector/agglomerative-clustering.cc",
+	"src/ivector/voice-activity-detection.cc",
+	"src/chain/chain-generic-numerator.cc",
+	"src/chain/chain-training.cc",
+	"src/chain/chain-denominator.cc",
+	"src/chain/language-model.cc",
+	"src/chain/chain-den-graph.cc",
+	"src/chain/chain-numerator.cc",
+	"src/chain/chain-supervision.cc",
+	"src/kws/kws-functions.cc",
+	"src/kws/kws-scoring.cc",
+	"src/kws/kws-functions2.cc",
+	"src/online2/online-nnet2-feature-pipeline.cc",
+	"src/online2/online-ivector-feature.cc",
+	"src/online2/online-feature-pipeline.cc",
+	"src/online2/online-nnet3-decoding.cc",
+	"src/online2/online-nnet2-decoding.cc",
+	"src/online2/onlinebin-util.cc",
+	"src/online2/online-timing.cc",
+	"src/online2/online-nnet2-decoding-threaded.cc",
+	"src/online2/online-speex-wrapper.cc",
+	"src/online2/online-gmm-decoding.cc",
+	"src/online2/online-nnet3-incremental-decoding.cc",
+	"src/online2/online-gmm-decodable.cc",
+	"src/online2/online-endpoint.cc",
+	"src/rnnlm/sampling-lm-estimate.cc",
+	"src/rnnlm/sampling-lm.cc",
+	"src/rnnlm/rnnlm-lattice-rescoring.cc",
+	"src/rnnlm/rnnlm-core-training.cc",
+	"src/rnnlm/rnnlm-compute-state.cc",
+	"src/rnnlm/rnnlm-utils.cc",
+	"src/rnnlm/rnnlm-training.cc",
+	"src/rnnlm/rnnlm-example-utils.cc",
+	"src/rnnlm/rnnlm-embedding-training.cc",
+	"src/rnnlm/sampler.cc",
+	"src/rnnlm/rnnlm-test-utils.cc",
+	"src/rnnlm/rnnlm-example.cc",
+	"src/rnnlm/rnnlm-core-compute.cc",
+	"src/cudamatrix/cu-array.cc",
+	"src/cudamatrix/cu-allocator.cc",
+	"src/cudamatrix/cu-device.cc",
+	"src/cudamatrix/cu-compressed-matrix.cc",
+	"src/cudamatrix/cu-vector.cc",
+	"src/cudamatrix/cu-block-matrix.cc",
+	"src/cudamatrix/cu-matrix.cc",
+	"src/cudamatrix/cu-common.cc",
+	"src/cudamatrix/cu-math.cc",
+	"src/cudamatrix/cu-sparse-matrix.cc",
+	"src/cudamatrix/cu-sp-matrix.cc",
+	"src/cudamatrix/cu-rand.cc",
+	"src/cudamatrix/cu-packed-matrix.cc",
+	"src/cudamatrix/cu-tp-matrix.cc",
+   ],
+   hdrs = [
+	"src/base/kaldi-common.h",
+	"src/base/kaldi-error.h",
+	"src/base/kaldi-utils.h",
+	"src/base/version.h",
+	"src/base/io-funcs.h",
+	"src/base/kaldi-types.h",
+	"src/base/kaldi-math.h",
+	"src/base/io-funcs-inl.h",
+	"src/base/timer.h",
+	"src/itf/optimizable-itf.h",
+	"src/itf/clusterable-itf.h",
+	"src/itf/online-feature-itf.h",
+	"src/itf/decodable-itf.h",
+	"src/itf/context-dep-itf.h",
+	"src/itf/options-itf.h",
+	"src/matrix/optimization.h",
+	"src/matrix/matrix-common.h",
+	"src/matrix/kaldi-blas.h",
+	"src/matrix/sp-matrix.h",
+	"src/matrix/kaldi-matrix.h",
+	"src/matrix/matrix-functions.h",
+	"src/matrix/jama-svd.h",
+	"src/matrix/packed-matrix.h",
+	"src/matrix/kaldi-vector-inl.h",
+	"src/matrix/matrix-lib.h",
+	"src/matrix/kaldi-vector.h",
+	"src/matrix/compressed-matrix.h",
+	"src/matrix/srfft.h",
+	"src/matrix/sparse-matrix.h",
+	"src/matrix/kaldi-matrix-inl.h",
+	"src/matrix/cblas-wrappers.h",
+	"src/matrix/jama-eig.h",
+	"src/matrix/sp-matrix-inl.h",
+	"src/matrix/matrix-functions-inl.h",
+	"src/matrix/tp-matrix.h",
+	"src/util/stl-utils.h",
+	"src/util/kaldi-cygwin-io-inl.h",
+	"src/util/hash-list.h",
+	"src/util/kaldi-holder-inl.h",
+	"src/util/kaldi-table.h",
+	"src/util/kaldi-thread.h",
+	"src/util/simple-io-funcs.h",
+	"src/util/kaldi-io.h",
+	"src/util/table-types.h",
+	"src/util/text-utils.h",
+	"src/util/simple-options.h",
+	"src/util/hash-list-inl.h",
+	"src/util/kaldi-semaphore.h",
+	"src/util/kaldi-holder.h",
+	"src/util/basic-filebuf.h",
+	"src/util/kaldi-io-inl.h",
+	"src/util/common-utils.h",
+	"src/util/const-integer-set-inl.h",
+	"src/util/const-integer-set.h",
+	"src/util/edit-distance-inl.h",
+	"src/util/kaldi-table-inl.h",
+	"src/util/parse-options.h",
+	"src/util/kaldi-pipebuf.h",
+	"src/util/edit-distance.h",
+	"src/feat/feature-functions.h",
+	"src/feat/pitch-functions.h",
+	"src/feat/feature-fbank.h",
+	"src/feat/signal.h",
+	"src/feat/feature-window.h",
+	"src/feat/feature-spectrogram.h",
+	"src/feat/online-feature.h",
+	"src/feat/wave-reader.h",
+	"src/feat/mel-computations.h",
+	"src/feat/feature-mfcc.h",
+	"src/feat/feature-common.h",
+	"src/feat/feature-plp.h",
+	"src/feat/feature-common-inl.h",
+	"src/feat/resample.h",
+	"src/tree/build-tree-utils.h",
+	"src/tree/cluster-utils.h",
+	"src/tree/build-tree-questions.h",
+	"src/tree/clusterable-classes.h",
+	"src/tree/event-map.h",
+	"src/tree/context-dep.h",
+	"src/tree/tree-renderer.h",
+	"src/tree/build-tree.h",
+	"src/gmm/mle-diag-gmm.h",
+	"src/gmm/full-gmm-normal.h",
+	"src/gmm/mle-full-gmm.h",
+	"src/gmm/diag-gmm-inl.h",
+	"src/gmm/model-test-common.h",
+	"src/gmm/am-diag-gmm.h",
+	"src/gmm/model-common.h",
+	"src/gmm/mle-am-diag-gmm.h",
+	"src/gmm/full-gmm-inl.h",
+	"src/gmm/indirect-diff-diag-gmm.h",
+	"src/gmm/diag-gmm-normal.h",
+	"src/gmm/full-gmm.h",
+	"src/gmm/ebw-diag-gmm.h",
+	"src/gmm/decodable-am-diag-gmm.h",
+	"src/gmm/diag-gmm.h",
+	"src/transform/mllt.h",
+	"src/transform/regression-tree.h",
+	"src/transform/lda-estimate.h",
+	"src/transform/compressed-transform-stats.h",
+	"src/transform/basis-fmllr-diag-gmm.h",
+	"src/transform/fmpe.h",
+	"src/transform/fmllr-diag-gmm.h",
+	"src/transform/transform-common.h",
+	"src/transform/lvtln.h",
+	"src/transform/cmvn.h",
+	"src/transform/regtree-fmllr-diag-gmm.h",
+	"src/transform/decodable-am-diag-gmm-regtree.h",
+	"src/transform/fmllr-raw.h",
+	"src/transform/regtree-mllr-diag-gmm.h",
+	"src/sgmm2/estimate-am-sgmm2.h",
+	"src/sgmm2/am-sgmm2-project.h",
+	"src/sgmm2/am-sgmm2.h",
+	"src/sgmm2/estimate-am-sgmm2-ebw.h",
+	"src/sgmm2/decodable-am-sgmm2.h",
+	"src/sgmm2/fmllr-sgmm2.h",
+	"src/fstext/epsilon-property-inl.h",
+	"src/fstext/prune-special.h",
+	"src/fstext/lattice-utils.h",
+	"src/fstext/pre-determinize-inl.h",
+	"src/fstext/factor-inl.h",
+	"src/fstext/determinize-lattice.h",
+	"src/fstext/factor.h",
+	"src/fstext/fstext-utils.h",
+	"src/fstext/push-special.h",
+	"src/fstext/remove-eps-local.h",
+	"src/fstext/lattice-weight.h",
+	"src/fstext/determinize-lattice-inl.h",
+	"src/fstext/trivial-factor-weight.h",
+	"src/fstext/fst-test-utils.h",
+	"src/fstext/epsilon-property.h",
+	"src/fstext/remove-eps-local-inl.h",
+	"src/fstext/table-matcher.h",
+	"src/fstext/fstext-utils-inl.h",
+	"src/fstext/deterministic-fst-inl.h",
+	"src/fstext/grammar-context-fst.h",
+	"src/fstext/kaldi-fst-io-inl.h",
+	"src/fstext/prune-special-inl.h",
+	"src/fstext/fstext-lib.h",
+	"src/fstext/deterministic-fst.h",
+	"src/fstext/determinize-star-inl.h",
+	"src/fstext/kaldi-fst-io.h",
+	"src/fstext/lattice-utils-inl.h",
+	"src/fstext/context-fst.h",
+	"src/fstext/determinize-star.h",
+	"src/fstext/pre-determinize.h",
+	"src/fstext/rand-fst.h",
+	"src/hmm/posterior.h",
+	"src/hmm/hmm-topology.h",
+	"src/hmm/tree-accu.h",
+	"src/hmm/transition-model.h",
+	"src/hmm/hmm-test-utils.h",
+	"src/hmm/hmm-utils.h",
+	"src/lm/mikolov-rnnlm-lib.h",
+	"src/lm/const-arpa-lm.h",
+	"src/lm/kaldi-rnnlm.h",
+	"src/lm/arpa-lm-compiler.h",
+	"src/lm/arpa-file-parser.h",
+	"src/decoder/lattice-incremental-decoder.h",
+	"src/decoder/grammar-fst.h",
+	"src/decoder/training-graph-compiler.h",
+	"src/decoder/decodable-sum.h",
+	"src/decoder/lattice-simple-decoder.h",
+	"src/decoder/decodable-mapped.h",
+	"src/decoder/lattice-biglm-faster-decoder.h",
+	"src/decoder/simple-decoder.h",
+	"src/decoder/faster-decoder.h",
+	"src/decoder/lattice-faster-online-decoder.h",
+	"src/decoder/decoder-wrappers.h",
+	"src/decoder/decodable-matrix.h",
+	"src/decoder/lattice-faster-decoder.h",
+	"src/decoder/biglm-faster-decoder.h",
+	"src/decoder/lattice-incremental-online-decoder.h",
+	"src/lat/word-align-lattice-lexicon.h",
+	"src/lat/sausages.h",
+	"src/lat/determinize-lattice-pruned.h",
+	"src/lat/kaldi-lattice.h",
+	"src/lat/confidence.h",
+	"src/lat/word-align-lattice.h",
+	"src/lat/compose-lattice-pruned.h",
+	"src/lat/arctic-weight.h",
+	"src/lat/minimize-lattice.h",
+	"src/lat/lattice-functions.h",
+	"src/lat/phone-align-lattice.h",
+	"src/lat/push-lattice.h",
+	"src/nnet/nnet-parametric-relu.h",
+	"src/nnet/nnet-randomizer.h",
+	"src/nnet/nnet-multibasis-component.h",
+	"src/nnet/nnet-linear-transform.h",
+	"src/nnet/nnet-recurrent.h",
+	"src/nnet/nnet-lstm-projected.h",
+	"src/nnet/nnet-various.h",
+	"src/nnet/nnet-trnopts.h",
+	"src/nnet/nnet-nnet.h",
+	"src/nnet/nnet-matrix-buffer.h",
+	"src/nnet/nnet-average-pooling-component.h",
+	"src/nnet/nnet-kl-hmm.h",
+	"src/nnet/nnet-activation.h",
+	"src/nnet/nnet-convolutional-component.h",
+	"src/nnet/nnet-component.h",
+	"src/nnet/nnet-frame-pooling-component.h",
+	"src/nnet/nnet-parallel-component.h",
+	"src/nnet/nnet-sentence-averaging-component.h",
+	"src/nnet/nnet-rbm.h",
+	"src/nnet/nnet-affine-transform.h",
+	"src/nnet/nnet-max-pooling-component.h",
+	"src/nnet/nnet-loss.h",
+	"src/nnet/nnet-utils.h",
+	"src/nnet/nnet-blstm-projected.h",
+	"src/nnet/nnet-pdf-prior.h",
+	"src/nnet2/nnet-update-parallel.h",
+	"src/nnet2/nnet-compute-discriminative.h",
+	"src/nnet2/nnet-example.h",
+	"src/nnet2/nnet-compute.h",
+	"src/nnet2/nnet-limit-rank.h",
+	"src/nnet2/rescale-nnet.h",
+	"src/nnet2/nnet-update.h",
+	"src/nnet2/nnet-example-functions.h",
+	"src/nnet2/online-nnet2-decodable.h",
+	"src/nnet2/get-feature-transform.h",
+	"src/nnet2/shrink-nnet.h",
+	"src/nnet2/nnet-fix.h",
+	"src/nnet2/train-nnet.h",
+	"src/nnet2/nnet-nnet.h",
+	"src/nnet2/nnet-compute-online.h",
+	"src/nnet2/decodable-am-nnet.h",
+	"src/nnet2/am-nnet.h",
+	"src/nnet2/nnet-stats.h",
+	"src/nnet2/nnet-compute-discriminative-parallel.h",
+	"src/nnet2/nnet-component.h",
+	"src/nnet2/nnet-functions.h",
+	"src/nnet2/train-nnet-ensemble.h",
+	"src/nnet2/combine-nnet.h",
+	"src/nnet2/nnet-precondition-online.h",
+	"src/nnet2/combine-nnet-fast.h",
+	"src/nnet2/combine-nnet-a.h",
+	"src/nnet2/nnet-precondition.h",
+	"src/nnet2/mixup-nnet.h",
+	"src/nnet2/widen-nnet.h",
+	"src/nnet3/nnet-training.h",
+	"src/nnet3/nnet-batch-compute.h",
+	"src/nnet3/nnet-example.h",
+	"src/nnet3/nnet-compute.h",
+	"src/nnet3/nnet-test-utils.h",
+	"src/nnet3/natural-gradient-online.h",
+	"src/nnet3/nnet-chain-diagnostics.h",
+	"src/nnet3/nnet-chain-example.h",
+	"src/nnet3/nnet-analyze.h",
+	"src/nnet3/decodable-online-looped.h",
+	"src/nnet3/nnet-compile.h",
+	"src/nnet3/nnet-compile-looped.h",
+	"src/nnet3/nnet-general-component.h",
+	"src/nnet3/nnet-common.h",
+	"src/nnet3/nnet-chain-training.h",
+	"src/nnet3/nnet-compile-utils.h",
+	"src/nnet3/nnet-nnet.h",
+	"src/nnet3/nnet-graph.h",
+	"src/nnet3/attention.h",
+	"src/nnet3/nnet-discriminative-training.h",
+	"src/nnet3/nnet-optimize.h",
+	"src/nnet3/nnet-optimize-utils.h",
+	"src/nnet3/nnet-normalize-component.h",
+	"src/nnet3/nnet-computation-graph.h",
+	"src/nnet3/nnet-convolutional-component.h",
+	"src/nnet3/nnet-component-itf.h",
+	"src/nnet3/nnet-example-utils.h",
+	"src/nnet3/nnet-attention-component.h",
+	"src/nnet3/nnet-descriptor.h",
+	"src/nnet3/convolution.h",
+	"src/nnet3/nnet-combined-component.h",
+	"src/nnet3/nnet-parse.h",
+	"src/nnet3/am-nnet-simple.h",
+	"src/nnet3/discriminative-training.h",
+	"src/nnet3/decodable-simple-looped.h",
+	"src/nnet3/discriminative-supervision.h",
+	"src/nnet3/nnet-computation.h",
+	"src/nnet3/nnet-discriminative-diagnostics.h",
+	"src/nnet3/nnet-simple-component.h",
+	"src/nnet3/nnet-discriminative-example.h",
+	"src/nnet3/nnet-diagnostics.h",
+	"src/nnet3/nnet-utils.h",
+	"src/nnet3/nnet-am-decodable-simple.h",
+	"src/ivector/plda.h",
+	"src/ivector/logistic-regression.h",
+	"src/ivector/voice-activity-detection.h",
+	"src/ivector/ivector-extractor.h",
+	"src/ivector/agglomerative-clustering.h",
+	"src/chain/chain-datastruct.h",
+	"src/chain/chain-kernels-ansi.h",
+	"src/chain/chain-den-graph.h",
+	"src/chain/chain-numerator.h",
+	"src/chain/chain-supervision.h",
+	"src/chain/chain-denominator.h",
+	"src/chain/chain-training.h",
+	"src/chain/language-model.h",
+	"src/chain/chain-generic-numerator.h",
+	"src/kws/kaldi-kws.h",
+	"src/kws/kws-scoring.h",
+	"src/kws/kws-functions.h",
+	"src/online2/online-nnet2-decoding-threaded.h",
+	"src/online2/online-nnet2-feature-pipeline.h",
+	"src/online2/online-nnet3-decoding.h",
+	"src/online2/online-gmm-decoding.h",
+	"src/online2/online-nnet3-incremental-decoding.h",
+	"src/online2/online-endpoint.h",
+	"src/online2/onlinebin-util.h",
+	"src/online2/online-nnet2-decoding.h",
+	"src/online2/online-timing.h",
+	"src/online2/online-ivector-feature.h",
+	"src/online2/online-gmm-decodable.h",
+	"src/online2/online-feature-pipeline.h",
+	"src/online2/online-speex-wrapper.h",
+	"src/rnnlm/rnnlm-core-compute.h",
+	"src/rnnlm/rnnlm-example-utils.h",
+	"src/rnnlm/sampling-lm-estimate.h",
+	"src/rnnlm/rnnlm-core-training.h",
+	"src/rnnlm/sampler.h",
+	"src/rnnlm/rnnlm-utils.h",
+	"src/rnnlm/rnnlm-test-utils.h",
+	"src/rnnlm/rnnlm-training.h",
+	"src/rnnlm/sampling-lm.h",
+	"src/rnnlm/rnnlm-lattice-rescoring.h",
+	"src/rnnlm/rnnlm-example.h",
+	"src/rnnlm/rnnlm-embedding-training.h",
+	"src/rnnlm/rnnlm-compute-state.h",
+	"src/cudamatrix/cublas-wrappers.h",
+	"src/cudamatrix/cu-matrix-lib.h",
+	"src/cudamatrix/cu-rand.h",
+	"src/cudamatrix/cu-array.h",
+	"src/cudamatrix/cu-kernels.h",
+	"src/cudamatrix/cu-allocator.h",
+	"src/cudamatrix/cu-tp-matrix.h",
+	"src/cudamatrix/cu-sp-matrix.h",
+	"src/cudamatrix/cu-math.h",
+	"src/cudamatrix/cu-array-inl.h",
+	"src/cudamatrix/cu-sparse-matrix.h",
+	"src/cudamatrix/cu-block-matrix.h",
+	"src/cudamatrix/cu-common.h",
+	"src/cudamatrix/cu-packed-matrix.h",
+	"src/cudamatrix/cu-value.h",
+	"src/cudamatrix/cu-matrix-inl.h",
+	"src/cudamatrix/cu-matrixdim.h",
+	"src/cudamatrix/cu-compressed-matrix.h",
+	"src/cudamatrix/cu-matrix.h",
+	"src/cudamatrix/cu-vector.h",
+	"src/cudamatrix/cu-kernels-ansi.h",
+	"src/cudamatrix/cu-device.h",
+   ],
+   includes = [prefix_dir,
+
+   ],
+   deps = ["@openfst//:fst",
+"openblas", "@openfst//:fstscript_print", 
+   ],
+   defines = [
+
+   ]
+)
+
+
+cc_binary(
+   name="arpa2fst",
+   srcs = [
+"src/lmbin/arpa2fst.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstaddselfloops",
+   srcs = [
+"src/fstbin/fstaddselfloops.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstaddsubsequentialloop",
+   srcs = [
+"src/fstbin/fstaddsubsequentialloop.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstcomposecontext",
+   srcs = [
+"src/fstbin/fstcomposecontext.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstcopy",
+   srcs = [
+"src/fstbin/fstcopy.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstdeterminizelog",
+   srcs = [
+"src/fstbin/fstdeterminizelog.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstdeterminizestar",
+   srcs = [
+"src/fstbin/fstdeterminizestar.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstisstochastic",
+   srcs = [
+"src/fstbin/fstisstochastic.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstmakecontextfst",
+   srcs = [
+"src/fstbin/fstmakecontextfst.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstmakecontextsyms",
+   srcs = [
+"src/fstbin/fstmakecontextsyms.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstminimizeencoded",
+   srcs = [
+"src/fstbin/fstminimizeencoded.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstphicompose",
+   srcs = [
+"src/fstbin/fstphicompose.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstpushspecial",
+   srcs = [
+"src/fstbin/fstpushspecial.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstrand",
+   srcs = [
+"src/fstbin/fstrand.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstrmepslocal",
+   srcs = [
+"src/fstbin/fstrmepslocal.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fstrmsymbols",
+   srcs = [
+"src/fstbin/fstrmsymbols.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fsts-concat",
+   srcs = [
+"src/fstbin/fsts-concat.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fsts-project",
+   srcs = [
+"src/fstbin/fsts-project.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fsts-to-transcripts",
+   srcs = [
+"src/fstbin/fsts-to-transcripts.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fsts-union",
+   srcs = [
+"src/fstbin/fsts-union.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="fsttablecompose",
+   srcs = [
+"src/fstbin/fsttablecompose.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+
+cc_binary(
+   name="make-grammar-fst",
+   srcs = [
+"src/fstbin/make-grammar-fst.cc"
+   ],
+   includes = [prefix_dir],
+   deps = [
+":kaldi"
+   ],
+   linkopts = ["-pthread"],
+)
+
+load("@pybind11_bazel//:build_defs.bzl", "pybind_extension")
+
+pybind_extension(
+  name="kaldi_pybind",
+  srcs =
+    glob(["src/pybind/*/*.cc", "src/pybind/*/*.h", "src/pybind/*.cc", "src/pybind/*.h"],
+    exclude=["src/pybind/tests/test_dlpack_subvector.cc",
+             "src/pybind/ctc/ctc_pybind.cc",
+             "src/pybind/ctc/ctc_pybind.h"])
+  ,
+  includes = [prefix_dir, prefix_dir + "pybind/"],
+  deps = [":kaldi", "@openfst//:fstscript"],
+)
