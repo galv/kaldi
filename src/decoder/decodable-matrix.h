@@ -211,7 +211,7 @@ class DecodableMatrixMappedOffset: public DecodableInterface {
 
 class DecodableMatrixScaled: public DecodableInterface {
  public:
-  DecodableMatrixScaled(const Matrix<BaseFloat> &likes,
+  DecodableMatrixScaled(const MatrixBase<BaseFloat> &likes,
                         BaseFloat scale):
     likes_(likes), scale_(scale) { }
 
@@ -236,7 +236,7 @@ class DecodableMatrixScaled: public DecodableInterface {
   virtual int32 NumIndices() const { return likes_.NumCols(); }
 
  private:
-  const Matrix<BaseFloat> &likes_;
+  const MatrixBase<BaseFloat> &likes_;
   BaseFloat scale_;
   KALDI_DISALLOW_COPY_AND_ASSIGN(DecodableMatrixScaled);
 };

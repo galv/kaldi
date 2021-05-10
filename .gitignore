@@ -6,6 +6,7 @@
 !/src/doc/*
 !/src/*/Makefile
 !/src/*/README
+!/src/pybind/*
 
 # Object files.
 *.slo
@@ -69,7 +70,6 @@ venv/
 
 # /src/
 /src/.short_version
-/src/base/version.h
 /src/doc/table/
 /src/doc/tools.dox
 /src/doc/*.html
@@ -78,6 +78,7 @@ venv/
 /src/kaldi.mk
 /src/kaldi.mk.tmp
 /src/kaldi.mk.bak
+/src/pybind/ctc/warp-ctc*
 
 # /egs/
 /egs/*/*/mfcc

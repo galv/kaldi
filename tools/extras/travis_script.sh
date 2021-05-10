@@ -68,7 +68,7 @@ CCC=$(mtoken CXX "$CXX")
 echo "Building tools..." [Time: $(date)]
 runvx cd tools
 runvx make -j$MAXPAR openfst "$CCC" CXXFLAGS="$CF" \
-      OPENFST_CONFIGURE="--disable-static --enable-shared --disable-bin --disable-dependency-tracking"
+      OPENFST_CONFIGURE="--disable-static --enable-shared --disable-dependency-tracking"
 runvx make -j$MAXPAR cub "$CCC" CXXFLAGS="$CF"
 cd ..
 
@@ -77,6 +77,17 @@ runvx touch base/.depend.mk  # Fool make depend into skipping the dependency ste
 runvx touch .short_version   # Make version short, or else ccache will miss everything.
 runvx "$CCC" CXXFLAGS="$CF" LDFLAGS="$LDF" ./configure --shared --use-cuda=no "$DPF" --mathlib=OPENBLAS --openblas-root="$XROOT/usr"
 runvx make -j$MAXPAR $CI_TARGETS CI_NOLINKBINARIES=1
+
+# (fangjun): for kaldi pybind
+if [[ $CI_TARGETS == test ]]; then
+  runvx pip3 install pybind11
+  # the following command is copied from https://pytorch.org/get-started/locally/
+  runvx pip3 install torch==1.3.1+cpu torchvision==0.4.2+cpu -f https://download.pytorch.org/whl/torch_stable.html
+  runvx cd pybind
+  runvx make -j$MAXPAR all
+  runvx make test
+  runvx cd ..
+fi
 
 # Travis has a 10k line log limit, so use smaller CI_TARGETS when logging.
 if [ -r "$CCACHE_LOGFILE" ]; then

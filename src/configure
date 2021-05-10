@@ -1179,6 +1179,15 @@ or try another math library, e.g. --mathlib=OPENBLAS (Kaldi may be slower)."
     echo "MKL_CXXFLAGS = $MKL_CXXFLAGS" >> kaldi.mk
     echo "MKL_LDLIBS = $MKL_LDLIBS" >> kaldi.mk
     echo >> kaldi.mk
+
+    echo "MKL_LD_PRELOAD := $MKLROOT/lib/intel64/libmkl_def.so \\
+                  $MKLROOT/lib/intel64/libmkl_avx2.so \\
+                  $MKLROOT/lib/intel64/libmkl_core.so \\
+                  $MKLROOT/lib/intel64/libmkl_intel_lp64.so \\
+                  $MKLROOT/lib/intel64/libmkl_intel_thread.so" >> kaldi.mk
+
+    echo >> kaldi.mk
+
     check_exists makefiles/linux_x86_64_mkl.mk
     cat makefiles/linux_x86_64_mkl.mk >> kaldi.mk
     echo "Successfully configured for Linux with MKL libraries found in" \
