@@ -14,7 +14,7 @@ LDFLAGS += $(CUDA_LDFLAGS)
 LDLIBS += $(CUDA_LDLIBS)
 EXTRA_LDLIBS += -lrt
 
-BINFILES = batched-wav-nnet3-cuda2 batched-wav-nnet3-cuda-online
+BINFILES = batched-wav-nnet3-cuda3 batched-wav-nnet3-cuda2 batched-wav-nnet3-cuda-online
 
 # The legacy batched-wav-nnet3-cuda contains some cuda calls not available on Jetson devices
 ifeq ($(HOST_ARCH), x86_64)
